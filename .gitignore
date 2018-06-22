@@ -1,0 +1,7 @@
+db.sqlite3
+
+# Eclipse PyDev Project Files
+.project
+.pydevproject
+__init__.py
+__pycache__/
