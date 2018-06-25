@@ -23,7 +23,7 @@ class HelloApiView(APIView):
     
     serializer_class = serializers.HelloSerializer
     
-    def get(self, request, format=None):
+    def get(self, request, version, format=None):
         """Returns a list of APIView features"""
         
         an_apivew = [

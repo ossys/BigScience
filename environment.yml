@@ -9,3 +9,4 @@ dependencies:
   - djangorestframework=3.8.2
   - pip:
     - djongo==1.2.29
+    - djangorestframework-jwt==1.11.0
