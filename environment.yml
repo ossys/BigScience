@@ -10,3 +10,4 @@ dependencies:
   - pip:
     - djongo==1.2.29
     - djangorestframework-jwt==1.11.0
+    - django-cors-headers==2.2.0

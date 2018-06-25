@@ -18,6 +18,19 @@ from rest_framework.decorators import authentication_classes, permission_classes
 
 # Create your views here.
 
+
+class LoginViewSet(viewsets.ViewSet):
+    """Checks email and password and returns an auth token"""
+    
+    serializer_class = AuthTokenSerializer
+    
+    def create(self, request):
+        """Use the ObtainAuthToken APIView to validate and create a token."""
+        
+        return ObtainAuthToken().post(request)
+
+
+
 class HelloApiView(APIView):
     """Test API View"""
     
@@ -124,16 +137,8 @@ class UserProfileViewSet(viewsets.ModelViewSet):
     filter_backends = (filters.SearchFilter,)
     search_fields = ('name','email',)
 
-class LoginViewSet(viewsets.ViewSet):
-    """Checks email and password and returns an auth token"""
-    
-    serializer_class = AuthTokenSerializer
-    
-    def create(self, request):
-        """Use the ObtainAuthToken APIView to validate and create a token."""
-        
-        return ObtainAuthToken().post(request)
-    
+
+
 class UserProfileFeedViewSet(viewsets.ModelViewSet):
     """Handles creating, reading and updating profile feed items."""
     
