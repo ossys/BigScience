@@ -10,7 +10,7 @@ import { EndpointService } from '../../services/endpoint/endpoint.service';
 export class LoginComponent implements OnInit {
   endpointService: EndpointService;
 
-  email: string;
+  username: string;
   password: string;
 
   constructor(endpointService: EndpointService) {
@@ -21,7 +21,7 @@ export class LoginComponent implements OnInit {
   }
 
   login() {
-    this.endpointService.login(this.email, this.password).subscribe(result => {
+    this.endpointService.login(this.username, this.password).subscribe(result => {
       console.log('login returned');
       console.log(result);
     });

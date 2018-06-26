@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs/Rx';
 
 import { Constants } from '../../constants';
@@ -15,10 +15,12 @@ export class EndpointService {
     this.http = http;
   }
     
-  login(email: string, password: string): Observable<LoginResponse> {
+  login(username: string, password: string): Observable<LoginResponse> {
     return this.http.post<LoginResponse>(Constants.URL.LOGIN, {
-      email: email,
-      password: password
+        username: username,
+        password: password
+      }, {
+      headers: new HttpHeaders().set('Content-Type', 'application/json')
     });
   }
 }
