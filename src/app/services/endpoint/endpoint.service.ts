@@ -3,24 +3,20 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs/Rx';
 
 import { Constants } from '../../constants';
-import { LoginResponse } from '../../models/login-response';
+import { Response } from '../../models/response';
 
 @Injectable({
   providedIn: 'root'
 })
 export class EndpointService {
-  http: HttpClient;
-
-  constructor(http: HttpClient) {
-    this.http = http;
-  }
+  constructor(private http: HttpClient) { }
     
-  login(username: string, password: string): Observable<LoginResponse> {
-    return this.http.post<LoginResponse>(Constants.URL.LOGIN, {
+  login(username: string, password: string): Observable<Response> {
+    return this.http.post<Response>(Constants.URL.LOGIN, {
         username: username,
         password: password
       }, {
-      headers: new HttpHeaders().set('Content-Type', 'application/json')
+      headers: new HttpHeaders().set('Content-Type', 'application/json').set('Accept', 'application/json; version=' + Constants.API_VERSION)
     });
   }
 }

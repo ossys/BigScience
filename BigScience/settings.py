@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework.authtoken',
     'corsheaders',
+    'versioning',
     'models',
     'login',
 ]
@@ -54,6 +55,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'versioning.middleware.EnforceVersioning',
 ]
 
 ROOT_URLCONF = 'BigScience.urls'
@@ -78,6 +80,7 @@ WSGI_APPLICATION = 'BigScience.wsgi.application'
 
 # Rest Framework
 REST_FRAMEWORK = {
+    'DEFAULT_VERSIONING_CLASS': 'rest_framework.versioning.AcceptHeaderVersioning',
     'DEFAULT_PERMISSION_CLASSES': (
         'rest_framework.permissions.IsAuthenticated',
     ),
@@ -140,3 +143,9 @@ APPEND_SLASH = False
 
 # CORS Configuration: https://github.com/ottoyiu/django-cors-headers/
 CORS_ORIGIN_ALLOW_ALL = True
+
+CONSTANTS = {
+    'VERSION': {
+        '1_0': '1.0'
+    }
+}
