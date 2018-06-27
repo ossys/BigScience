@@ -11,12 +11,15 @@ import { EndpointService } from './services/endpoint/endpoint.service';
 import { UserComponent } from './components/user/user.component';
 import { DashboardComponent } from './components/dashboard/dashboard.component';
 import { HomeComponent } from './components/home/home.component';
+import { SidebarComponent } from './components/dashboard/sidebar/sidebar.component';
+import { PanelComponent } from './components/dashboard/panel/panel.component';
+import { FooterComponent } from './components/dashboard/footer/footer.component';
 
 const routes: Routes = [
     {
         path: '',
         component: HomeComponent
-    }
+    },
     {
         path: 'login',
         component: LoginComponent
@@ -33,7 +36,10 @@ const routes: Routes = [
     LoginComponent,
     UserComponent,
     DashboardComponent,
-    HomeComponent
+    HomeComponent,
+    SidebarComponent,
+    PanelComponent,
+    FooterComponent
   ],
   imports: [
     BrowserModule,
