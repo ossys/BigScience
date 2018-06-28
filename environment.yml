@@ -12,3 +12,5 @@ dependencies:
     - djongo==1.2.29
     - djangorestframework-jwt==1.11.0
     - django-cors-headers==2.2.0
+    - django-nose==1.4.5
+    - coverage==4.5.1

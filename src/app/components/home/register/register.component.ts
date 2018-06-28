@@ -32,9 +32,7 @@ export class RegisterComponent implements OnInit {
 
     register() {
         this.endpointService.register(this.email, this.username, this.first_name, this.last_name, this.password).subscribe(result => {
-            if (result.success) {
-                this.router.navigate(['dashboard']);
-            }
+            this.router.navigate(['dashboard']);
         });
     }
 

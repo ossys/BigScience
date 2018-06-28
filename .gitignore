@@ -45,3 +45,4 @@ Thumbs.db
 .project
 .pydevproject
 __pycache__/
+.coverage

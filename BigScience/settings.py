@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework.authtoken',
     'corsheaders',
+    'django_nose',
     'models',
     'login',
     'register',
@@ -148,3 +149,10 @@ CONSTANTS = {
         '1_0': '1.0'
     }
 }
+
+# Django Nose Test Runner Configuration
+TEST_RUNNER = 'django_nose.NoseTestSuiteRunner'
+NOSE_ARGS = [
+    '--with-coverage',
+    '--cover-package=models,login,register',
+]
