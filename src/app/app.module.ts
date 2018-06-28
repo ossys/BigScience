@@ -20,6 +20,7 @@ import { SidebarComponent } from './components/dashboard/sidebar/sidebar.compone
 import { PanelComponent } from './components/dashboard/panel/panel.component';
 import { FooterComponent } from './components/dashboard/footer/footer.component';
 import { NavComponent } from './components/dashboard/nav/nav.component';
+import { ProfileComponent } from './components/dashboard/profile/profile.component';
 
 const routes: Routes = [
     { path: '', component: HomeComponent },
@@ -40,7 +41,8 @@ const routes: Routes = [
     PanelComponent,
     FooterComponent,
     NavComponent,
-    RegisterComponent
+    RegisterComponent,
+    ProfileComponent
   ],
   imports: [
     BrowserModule,
