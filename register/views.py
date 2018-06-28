@@ -1,24 +1,22 @@
 from rest_framework import viewsets
-from rest_framework.response import Response
-from rest_framework.permissions import AllowAny
+from rest_framework import permissions
 
 from models import models
 from . import serializers
 
 # Create your views here.
-class HelloViewSet(viewsets.ViewSet):
-    """Test API ViewSet"""
-    
-    def list(self, request):
-        """Return a hello message"""
-        a_viewset = ['one', 'two', 'three']
-        
-        return Response({'message':'Hello','a_viewset':a_viewset})
-    
+
 class UserProfileViewSet(viewsets.ModelViewSet):
     """Handles creating and updating UserProfile"""
-    permission_classes = (AllowAny,)
+#     permission_classes = (AllowAny,)
 
     serializer_class = serializers.UserProfileSerializer
     queryset = models.UserProfile.objects.all()
-    
+
+    def get_permissions(self):
+        if self.action == 'create':
+                permission_classes = [permissions.AllowAny]
+        else:
+            permission_classes = [permissions.IsAuthenticated]
+
+        return [permission() for permission in permission_classes]
