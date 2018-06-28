@@ -4,20 +4,26 @@ import { FormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
 import { Routes, RouterModule } from '@angular/router';
 
-import { AppComponent } from './app.component';
-import { LoginComponent } from './components/login/login.component';
-
+/* Services */
 import { EndpointService } from './services/endpoint/endpoint.service';
+
+/* Home Components */
+import { AppComponent } from './app.component';
+import { HomeComponent } from './components/home/home.component';
+import { LoginComponent } from './components/home/login/login.component';
+import { RegisterComponent } from './components/home/register/register.component';
+
+/* Dashboard Components */
 import { UserComponent } from './components/user/user.component';
 import { DashboardComponent } from './components/dashboard/dashboard.component';
-import { HomeComponent } from './components/home/home.component';
 import { SidebarComponent } from './components/dashboard/sidebar/sidebar.component';
 import { PanelComponent } from './components/dashboard/panel/panel.component';
 import { FooterComponent } from './components/dashboard/footer/footer.component';
+import { NavComponent } from './components/dashboard/nav/nav.component';
 
 const routes: Routes = [
     {
-        path: '',
+        path: 'home',
         component: HomeComponent
     },
     {
@@ -25,8 +31,16 @@ const routes: Routes = [
         component: LoginComponent
     },
     {
+        path: 'register',
+        component: RegisterComponent
+    },
+    {
         path: 'dashboard',
         component: DashboardComponent
+    },
+    {
+        path: '',
+        component: HomeComponent
     }
 ];
 
@@ -39,7 +53,9 @@ const routes: Routes = [
     HomeComponent,
     SidebarComponent,
     PanelComponent,
-    FooterComponent
+    FooterComponent,
+    NavComponent,
+    RegisterComponent
   ],
   imports: [
     BrowserModule,
@@ -47,7 +63,9 @@ const routes: Routes = [
     HttpClientModule,
     RouterModule.forRoot(routes)
   ],
-  providers: [EndpointService],
+  providers: [
+    EndpointService
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

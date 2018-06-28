@@ -4,7 +4,7 @@ from django.contrib.auth.models import PermissionsMixin
 from django.contrib.auth.models import BaseUserManager
 
 # Create your models here.
-class UserManager(BaseUserManager):
+class UserProfileManager(BaseUserManager):
     """Helps Django work with our custom user model."""
     
     def create_user(self, username, email, password, **extra_fields):
@@ -37,7 +37,7 @@ class UserManager(BaseUserManager):
         return user
 
 
-class User(AbstractBaseUser, PermissionsMixin):
+class UserProfile(AbstractBaseUser, PermissionsMixin):
     """Represents a User."""
 
     username = models.CharField(max_length=50, unique=True)
@@ -47,10 +47,10 @@ class User(AbstractBaseUser, PermissionsMixin):
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
 
-    objects = UserManager()
+    objects = UserProfileManager()
 
-    USERNAME_FIELD = 'username'
-    REQUIRED_FIELDS = ['email']
+    USERNAME_FIELD = 'email'
+    REQUIRED_FIELDS = ['username']
     
     def get_full_name(self):
         """ Get a user's full name """

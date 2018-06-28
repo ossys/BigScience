@@ -13,18 +13,19 @@ class Login(APIView):
     permission_classes = (AllowAny,)
 
     def post(self, request, *args, **kwargs):
-        if not request.data or not request.data['username'] or not request.data['password']:
+        if not request.data or not request.data['email'] or not request.data['password']:
             return Response(
-              models.Response(success=False, message='Please provide a username and password.').dict(),
+              models.Response(success=False, message='Please provide an email and password.').dict(),
               status=400,
               content_type="application/json"
             )
 
         if not self.request.version or self.request.version == settings.CONSTANTS['VERSION']['1_0']:
-            if authenticate(username=request.data['username'],password=request.data['password']):
-                user = models.User.objects.get(username=request.data['username'])
+            if authenticate(email=request.data['email'],password=request.data['password']):
+                user = models.UserProfile.objects.get(email=request.data['email'])
                 payload = {
                     'id': user.id,
+                    'email': user.email,
                     'username': user.username,
                 }
                 return Response(

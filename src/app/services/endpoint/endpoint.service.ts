@@ -11,9 +11,9 @@ import { Response } from '../../models/response';
 export class EndpointService {
   constructor(private http: HttpClient) { }
     
-  login(username: string, password: string): Observable<Response> {
+  login(email: string, password: string): Observable<Response> {
     return this.http.post<Response>(Constants.URL.LOGIN, {
-        username: username,
+        email: email,
         password: password
       }, {
       headers: new HttpHeaders().set('Content-Type', 'application/json').set('Accept', 'application/json; version=' + Constants.API_VERSION)

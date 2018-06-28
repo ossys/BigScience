@@ -41,7 +41,6 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework.authtoken',
     'corsheaders',
-    'versioning',
     'models',
     'login',
 ]
@@ -55,7 +54,6 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'versioning.middleware.EnforceVersioning',
 ]
 
 ROOT_URLCONF = 'BigScience.urls'
@@ -137,7 +135,7 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
-AUTH_USER_MODEL = 'models.User'
+AUTH_USER_MODEL = 'models.UserProfile'
 
 APPEND_SLASH = False
 
