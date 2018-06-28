@@ -22,26 +22,11 @@ import { FooterComponent } from './components/dashboard/footer/footer.component'
 import { NavComponent } from './components/dashboard/nav/nav.component';
 
 const routes: Routes = [
-    {
-        path: 'home',
-        component: HomeComponent
-    },
-    {
-        path: 'login',
-        component: LoginComponent
-    },
-    {
-        path: 'register',
-        component: RegisterComponent
-    },
-    {
-        path: 'dashboard',
-        component: DashboardComponent
-    },
-    {
-        path: '',
-        component: HomeComponent
-    }
+    { path: '', component: HomeComponent },
+    { path: 'home', component: HomeComponent },
+    { path: 'login', component: LoginComponent },
+    { path: 'register', component: RegisterComponent },
+    { path: 'dashboard', component: DashboardComponent },
 ];
 
 @NgModule({

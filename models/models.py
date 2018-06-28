@@ -1,4 +1,6 @@
 from django.db import models
+from django.utils import timezone
+
 from django.contrib.auth.models import AbstractBaseUser
 from django.contrib.auth.models import PermissionsMixin
 from django.contrib.auth.models import BaseUserManager
@@ -46,12 +48,22 @@ class UserProfile(AbstractBaseUser, PermissionsMixin):
     last_name = models.CharField(max_length=255)
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
+    created_date = models.DateTimeField(default=None, null=True)
+    updated_date = models.DateTimeField(default=None, null=True)
 
     objects = UserProfileManager()
 
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['username']
-    
+
+    def save(self, *args, **kwargs):
+        """ On save, update timestamps """
+        # If the record does not currently exist in the database
+        self.created_date = timezone.now()
+        self.updated_date = timezone.now()
+
+        return super(UserProfile, self).save(*args, **kwargs)
+
     def get_full_name(self):
         """ Get a user's full name """
         return self.first_name + " " + self.last_name

@@ -12,7 +12,7 @@
         <div class="collapse navbar-collapse">
 
             <ul class="nav navbar-nav navbar-right">
-                <li><a routerLink="register">Login</a></li>
+                <li><a [routerLink]="['/login']">Login</a></li>
             </ul>
         </div>
     </div>
@@ -37,44 +37,36 @@
                         <div class="media">
                             <div class="media-left">
                                 <div class="icon">
-                                    <i class="pe-7s-user"></i>
+                                    <i class="pe-7s-cloud-upload"></i>
                                 </div>
                             </div>
                             <div class="media-body">
-                                <h4>Free Account</h4>
-                                Here you can write a feature description
-                                for your dashboard, let the users know
-                                what is the value that you give them.
+                                <h4>Upload</h4>
+                                Upload your scientific datasets, of any size, to the BigScience datalake.
                             </div>
                         </div>
 
                         <div class="media">
                             <div class="media-left">
                                 <div class="icon">
-                                    <i class="pe-7s-graph1"></i>
+                                    <i class="pe-7s-search"></i>
                                 </div>
                             </div>
                             <div class="media-body">
-                                <h4>Awesome Performances</h4>
-                                Here you can write a feature description
-                                for your dashboard, let the users know
-                                what is the value that you give them.
-
+                                <h4>Discover</h4>
+                                Use ad-hoc query and analysis tools to discover the data that you're most interested in.
                             </div>
                         </div>
 
                         <div class="media">
                             <div class="media-left">
                                 <div class="icon">
-                                    <i class="pe-7s-headphones"></i>
+                                    <i class="pe-7s-graph2"></i>
                                 </div>
                             </div>
                             <div class="media-body">
-                                <h4>Global Support</h4>
-                                Here you can write a feature description
-                                for your dashboard, let the users know
-                                what is the value that you give them.
-
+                                <h4>Analyze</h4>
+                                Leverage advanced analytics capabilities to dig deep on your data. You can perform data visualization and machine learning to gain valuable insight from your raw datasets.
                             </div>
                         </div>
 
@@ -86,37 +78,49 @@
                                     <div class="form-group">
                                         <input type="email"
                                             placeholder="E-Mail"
-                                            class="form-control">
+                                            class="form-control"
+                                            name="email"
+                                            [(ngModel)]="email">
                                     </div>
                                     <div class="form-group">
                                         <input type="text"
-                                            placeholder="Kerberos Username"
-                                            class="form-control">
+                                            placeholder="Username"
+                                            class="form-control"
+                                            name="username"
+                                            [(ngModel)]="username">
                                     </div>
                                     <div class="form-group">
                                         <input type="text"
                                             placeholder="First Name"
-                                            class="form-control">
+                                            class="form-control"
+                                            name="first_name"
+                                            [(ngModel)]="first_name">
                                     </div>
                                     <div class="form-group">
                                         <input type="text"
                                             placeholder="Last Name"
-                                            class="form-control">
+                                            class="form-control"
+                                            name="last_name"
+                                            [(ngModel)]="last_name">
                                     </div>
                                     <div class="form-group">
                                         <input type="password"
                                             placeholder="Password"
-                                            class="form-control">
+                                            class="form-control"
+                                            name="password"
+                                            [(ngModel)]="password">
                                     </div>
                                     <div class="form-group">
                                         <input type="password"
                                             placeholder="Password Confirmation"
-                                            class="form-control">
+                                            class="form-control"
+                                            name="password_confirm"
+                                            [(ngModel)]="password_confirm">
                                     </div>
                                 </div>
                                 <div class="footer text-center">
                                     <button type="submit"
-                                        class="btn btn-fill btn-neutral btn-wd">Create Account</button>
+                                        class="btn btn-fill btn-neutral btn-wd" (click)="register()">Create Account</button>
                                 </div>
                             </div>
                         </form>

@@ -1,4 +1,7 @@
 import { Component, OnInit, AfterViewInit } from '@angular/core';
+import { Router } from '@angular/router';
+
+import { EndpointService } from '../../../services/endpoint/endpoint.service';
 
 @Component({
     selector: 'app-register',
@@ -7,18 +10,31 @@ import { Component, OnInit, AfterViewInit } from '@angular/core';
 })
 export class RegisterComponent implements OnInit {
 
-    constructor() { }
+    email: string;
+    username: string;
+    first_name: string;
+    last_name: string;
+    password: string;
+
+    constructor(private router: Router, private endpointService: EndpointService) { }
 
     ngOnInit() {
     }
 
     ngAfterViewInit() {
         setTimeout(function() {
-            lbd.checkFullPageBackgroundImage();
+            window['lbd'].checkFullPageBackgroundImage();
             setTimeout(function() {
-                // after 1000 ms we add the class animated to the login/register card
-                $('.card').removeClass('card-hidden');
+                window['$']('.card').removeClass('card-hidden');
             }, 1000)
+        });
+    }
+
+    register() {
+        this.endpointService.register(this.email, this.username, this.first_name, this.last_name, this.password).subscribe(result => {
+            if (result.success) {
+                this.router.navigate(['dashboard']);
+            }
         });
     }
 
