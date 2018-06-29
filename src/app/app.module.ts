@@ -14,27 +14,35 @@ import { LoginComponent } from './components/home/login/login.component';
 import { RegisterComponent } from './components/home/register/register.component';
 
 /* Dashboard Components */
-import { UserComponent } from './components/user/user.component';
 import { DashboardComponent } from './components/dashboard/dashboard.component';
 import { SidebarComponent } from './components/dashboard/sidebar/sidebar.component';
-import { PanelComponent } from './components/dashboard/panel/panel.component';
 import { FooterComponent } from './components/dashboard/footer/footer.component';
 import { NavComponent } from './components/dashboard/nav/nav.component';
+import { PanelComponent } from './components/dashboard/panel/panel.component';
+import { SummaryComponent } from './components/dashboard/summary/summary.component';
 import { ProfileComponent } from './components/dashboard/profile/profile.component';
+import { DataUploadComponent } from './components/dashboard/data-upload/data-upload.component';
+import { DataExplorerComponent } from './components/dashboard/data-explorer/data-explorer.component';
+import { AnalyticsComponent } from './components/dashboard/analytics/analytics.component';
 
 const routes: Routes = [
     { path: '', component: HomeComponent },
     { path: 'home', component: HomeComponent },
     { path: 'login', component: LoginComponent },
     { path: 'register', component: RegisterComponent },
-    { path: 'dashboard', component: DashboardComponent },
+    { path: 'dashboard', component: DashboardComponent, children: [
+        { path: 'summary', component: SummaryComponent },
+        { path: 'profile', component: ProfileComponent },
+        { path: 'data-upload', component: DataUploadComponent },
+        { path: 'data-explorer', component: DataExplorerComponent },
+        { path: 'analytics', component: AnalyticsComponent }
+    ]},
 ];
 
 @NgModule({
   declarations: [
     AppComponent,
     LoginComponent,
-    UserComponent,
     DashboardComponent,
     HomeComponent,
     SidebarComponent,
@@ -42,7 +50,11 @@ const routes: Routes = [
     FooterComponent,
     NavComponent,
     RegisterComponent,
-    ProfileComponent
+    ProfileComponent,
+    DataUploadComponent,
+    DataExplorerComponent,
+    AnalyticsComponent,
+    SummaryComponent
   ],
   imports: [
     BrowserModule,
