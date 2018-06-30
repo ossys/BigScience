@@ -22,7 +22,7 @@ export class SummaryComponent implements OnInit {
             message: "<b>Light Bootstrap Dashboard PRO</b> - forget about boring dashboards."
         },{
             type: 'warning',
-            timer: 4000
+            timer: 1000
         });
     });
   }
