@@ -3,7 +3,7 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs/Rx';
 
 import { Constants } from '../../constants';
-import { Response } from '../../models/response';
+import { AppResponse } from '../../models/app-response';
 
 @Injectable({
   providedIn: 'root'
@@ -11,8 +11,8 @@ import { Response } from '../../models/response';
 export class EndpointService {
   constructor(private http: HttpClient) { }
     
-  login(email: string, password: string): Observable<Response> {
-    return this.http.post<Response>(Constants.URL.LOGIN, {
+  login(email: string, password: string): Observable<AppResponse> {
+    return this.http.post<AppResponse>(Constants.URL.LOGIN, {
         email: email,
         password: password
       }, {
@@ -20,8 +20,8 @@ export class EndpointService {
     });
   }
 
-  register(email: string, username: string, first_name: string, last_name: string, password: string): Observable<Response> {
-    return this.http.post<Response>(Constants.URL.REGISTER, {
+  register(email: string, username: string, first_name: string, last_name: string, password: string): Observable<AppResponse> {
+    return this.http.post<AppResponse>(Constants.URL.REGISTER, {
         email: email,
         username: username,
         first_name: first_name,

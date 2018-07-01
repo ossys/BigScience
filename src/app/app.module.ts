@@ -25,6 +25,10 @@ import { DataUploadComponent } from './components/dashboard/data-upload/data-upl
 import { DataExplorerComponent } from './components/dashboard/data-explorer/data-explorer.component';
 import { AnalyticsComponent } from './components/dashboard/analytics/analytics.component';
 
+/* Directives */
+import { DndDirective } from './directives/dnd/dnd.directive';
+import { FileDirective } from './directives/file/file.directive';
+
 const routes: Routes = [
     { path: '', component: HomeComponent },
     { path: 'home', component: HomeComponent },
@@ -54,7 +58,9 @@ const routes: Routes = [
     DataUploadComponent,
     DataExplorerComponent,
     AnalyticsComponent,
-    SummaryComponent
+    SummaryComponent,
+    DndDirective,
+    FileDirective
   ],
   imports: [
     BrowserModule,
