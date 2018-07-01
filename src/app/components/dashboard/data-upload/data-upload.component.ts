@@ -20,8 +20,4 @@ export class DataUploadComponent implements OnInit {
         this.files = this.files.concat(fileList);
     }
 
-    onFilesInvalid(fileList: AppFile[]) {
-        this.files = this.files.concat(fileList);
-    }
-
 }

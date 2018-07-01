@@ -11,8 +11,7 @@ export class DndDirective {
     private background = '#eee';
 
     @Input() private allowed_extensions: Array<string> = [];
-    @Output() private filesChangeEmiter: EventEmitter<AppFile[]> = new EventEmitter();
-    @Output() private filesInvalidEmiter: EventEmitter<AppFile[]> = new EventEmitter();
+    @Output() private filesEmitter: EventEmitter<AppFile[]> = new EventEmitter();
 
     constructor() { }
 
@@ -35,19 +34,20 @@ export class DndDirective {
         event.stopPropagation();
         this.background = '#eee';
         let files = event.dataTransfer.files;
-        let valid_files: Array<AppFile> = [];
-        let invalid_files: Array<AppFile> = [];
+        let emitFiles: Array<AppFile> = [];
+
         if (files.length > 0) {
             for(var i = 0, len = files.length; i < len; i++) {
+                var file = new AppFile().deserialize(files[i]);
                 let ext = files[i].name.split('.')[files[i].name.split('.').length - 1];
                 if (this.allowed_extensions.lastIndexOf(ext) != -1) {
-                    valid_files.push(new AppFile().deserialize(files[i]));
+                    file.status = AppFile.Status.VALID;
                 } else {
-                    invalid_files.push(new AppFile().deserialize(files[i]));
+                    file.status = AppFile.Status.INVALID;
                 }
+                emitFiles.push(file);
             }
-            this.filesChangeEmiter.emit(valid_files);
-            this.filesInvalidEmiter.emit(invalid_files);
+            this.filesEmitter.emit(emitFiles);
         }
     }
 }

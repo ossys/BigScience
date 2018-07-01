@@ -21,8 +21,7 @@
             <!-- Drop Zone -->
             <h4 class="text-center">Or Drag and Drop Your Files Below</h4>
             <div class="upload-drop-zone" appDnd
-            (filesChangeEmiter)="onFilesAdded($event)"
-            (filesInvalidEmiter)="onFilesInvalid($event)"
+            (filesEmitter)="onFilesAdded($event)"
             [allowed_extensions]="['h5', 'hdf', 'hdf5']">
               <i class="pe-7s-download"></i>
             </div>
@@ -39,7 +38,7 @@
             <!-- Upload Finished -->
             <div class="js-upload-finished">
                 <h3>Selected Files</h3>
-                <appFile *ngFor="let file of files">{{ file.getName() }}</appFile>
+                <appFile *ngFor="let file of files">{{ file.name }} ({{ file.status }})</appFile>
             </div>
         </div>
     </div>

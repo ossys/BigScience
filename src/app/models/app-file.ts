@@ -1,15 +1,33 @@
-import { Deserializable } from '../../interfaces/deserializable';
+import { Deserializable } from '../interfaces/deserializable';
+
+enum Status {
+    VALID,
+    INVALID,
+    UPLOADING,
+    UPLOADED
+}
 
 export class AppFile implements Deserializable {
+    static readonly Status = Status;
     
-    file: File;
+    private _file: File;
+    private _status: Status;
 
-    deserialize(file: any) {
-        this.file = file;
+    deserialize(file: any): this {
+        this._file = file;
         return this;
     }
 
-    getName(): string {
-        return this.file.name;
+    get status(): Status {
+        return this._status;
     }
+
+    set status(status: Status) {
+        this._status = status;
+    }
+    
+    get name(): string {
+        return this._file.name;
+    }
+
 }
