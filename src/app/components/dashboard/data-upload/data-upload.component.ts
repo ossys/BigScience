@@ -1,5 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 
+import { BytesPipe } from 'angular-pipes';
+
 import { AppFile } from '../../../models/app-file';
 
 @Component({

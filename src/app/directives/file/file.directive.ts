@@ -12,6 +12,8 @@ export class FileDirective {
 
     @Input() private file: AppFile;
 
-    constructor() { }
+    constructor(private el: ElementRef) {
+    
+    }
 
 }

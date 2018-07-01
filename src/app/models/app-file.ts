@@ -10,11 +10,12 @@ enum Status {
 export class AppFile implements Deserializable {
     static readonly Status = Status;
     
-    private _file: File;
+    private file: File;
     private _status: Status;
 
     deserialize(file: any): this {
-        this._file = file;
+        console.dir(file);
+        this.file = file;
         return this;
     }
 
@@ -27,7 +28,15 @@ export class AppFile implements Deserializable {
     }
     
     get name(): string {
-        return this._file.name;
+        return this.file.name;
+    }
+    
+    get size(): number {
+        return this.file.size;
+    }
+    
+    get type(): string {
+        return this.file.type;
     }
 
 }

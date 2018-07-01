@@ -4,6 +4,9 @@ import { FormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
 import { Routes, RouterModule } from '@angular/router';
 
+/* Libraries */
+import { NgMathPipesModule } from 'angular-pipes';
+
 /* Services */
 import { EndpointService } from './services/endpoint/endpoint.service';
 
@@ -66,7 +69,8 @@ const routes: Routes = [
     BrowserModule,
     FormsModule,
     HttpClientModule,
-    RouterModule.forRoot(routes)
+    RouterModule.forRoot(routes),
+    NgMathPipesModule
   ],
   providers: [
     EndpointService
