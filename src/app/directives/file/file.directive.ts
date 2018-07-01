@@ -1,4 +1,4 @@
-import { Directive, Input, HostBinding } from '@angular/core';
+import { Directive, Input, HostBinding, ElementRef } from '@angular/core';
 
 import { AppFile } from '../../models/app-file';
 
