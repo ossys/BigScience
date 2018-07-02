@@ -1,19 +1,21 @@
-import { Directive, Input, HostBinding, ElementRef } from '@angular/core';
+import { Directive, Input, TemplateRef, ViewContainerRef } from '@angular/core';
 
 import { AppFile } from '../../models/app-file';
 
 @Directive({
-    selector: 'appFile'
+    selector: '[appFile]'
 })
 export class FileDirective {
 
-    @HostBinding('style.background')
-    private background = '#eee';
+    @Input() set appFile(file: AppFile) {
+        console.log('SET FILE');
+        console.dir(file);
+    }
 
-    @Input() private file: AppFile;
+    constructor(
+        private templateRef: TemplateRef<any>,
+        private viewContainer: ViewContainerRef) {
 
-    constructor(private el: ElementRef) {
-    
     }
 
 }

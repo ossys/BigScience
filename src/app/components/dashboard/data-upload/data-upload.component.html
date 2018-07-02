@@ -38,7 +38,9 @@
             <!-- Upload Finished -->
             <div class="js-upload-finished">
                 <h3>Selected Files</h3>
-                <appFile *ngFor="let file of files">{{ file.name }} ({{ file.status }}) - {{ file.size | bytes }} {{ file.type }}</appFile>
+                <div *ngFor="let file of files">
+                  <div *appFile="file"></div>
+                </div>
             </div>
         </div>
     </div>

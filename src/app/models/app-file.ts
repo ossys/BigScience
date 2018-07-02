@@ -14,7 +14,6 @@ export class AppFile implements Deserializable {
     private _status: Status;
 
     deserialize(file: any): this {
-        console.dir(file);
         this.file = file;
         return this;
     }
