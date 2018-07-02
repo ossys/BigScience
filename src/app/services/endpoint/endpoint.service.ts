@@ -4,6 +4,7 @@ import { Observable } from 'rxjs/Rx';
 
 import { Constants } from '../../constants';
 import { AppResponse } from '../../models/app-response';
+import { AppFile } from '../../models/app-file';
 
 @Injectable({
   providedIn: 'root'
@@ -27,6 +28,14 @@ export class EndpointService {
         first_name: first_name,
         last_name: last_name,
         password: password
+      }, {
+      headers: new HttpHeaders().set('Content-Type', 'application/json').set('Accept', 'application/json; version=' + Constants.API_VERSION)
+    });
+  }
+
+  dataUpload(filename: string, file: AppFile): Observable<AppResponse> {
+    return this.http.post<AppResponse>(Constants.URL.REGISTER, {
+        filename: filename
       }, {
       headers: new HttpHeaders().set('Content-Type', 'application/json').set('Accept', 'application/json; version=' + Constants.API_VERSION)
     });

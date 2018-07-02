@@ -3,6 +3,10 @@ export class Constants {
   public static API_VERSION = '1.0';
   public static URL = {
     LOGIN: Constants.HOST + '/api/login',
-    REGISTER: Constants.HOST + '/api/userprofile'
+    REGISTER: Constants.HOST + '/api/userprofile',
+    UPLOAD: Constants.HOST + '/api/upload'
+  };
+  public static LOCAL_STORAGE = {
+    UPLOADS: 'uploads'
   };
 }

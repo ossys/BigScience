@@ -5,7 +5,7 @@ import { HttpClientModule } from '@angular/common/http';
 import { Routes, RouterModule } from '@angular/router';
 
 /* Libraries */
-import { NgMathPipesModule } from 'angular-pipes';
+import { NgMathPipesModule, NgStringPipesModule } from 'angular-pipes';
 
 /* Services */
 import { EndpointService } from './services/endpoint/endpoint.service';
@@ -30,7 +30,6 @@ import { AnalyticsComponent } from './components/dashboard/analytics/analytics.c
 
 /* Directives */
 import { DndDirective } from './directives/dnd/dnd.directive';
-import { FileDirective } from './directives/file/file.directive';
 
 const routes: Routes = [
     { path: '', component: HomeComponent },
@@ -62,15 +61,15 @@ const routes: Routes = [
     DataExplorerComponent,
     AnalyticsComponent,
     SummaryComponent,
-    DndDirective,
-    FileDirective
+    DndDirective
   ],
   imports: [
     BrowserModule,
     FormsModule,
     HttpClientModule,
     RouterModule.forRoot(routes),
-    NgMathPipesModule
+    NgMathPipesModule,
+    NgStringPipesModule
   ],
   providers: [
     EndpointService

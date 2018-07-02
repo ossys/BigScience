@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     'models',
     'login',
     'register',
+    'file',
 ]
 
 MIDDLEWARE = [
@@ -154,5 +155,5 @@ CONSTANTS = {
 TEST_RUNNER = 'django_nose.NoseTestSuiteRunner'
 NOSE_ARGS = [
     '--with-coverage',
-    '--cover-package=models,login,register',
+    '--cover-package=models,login,register,file',
 ]

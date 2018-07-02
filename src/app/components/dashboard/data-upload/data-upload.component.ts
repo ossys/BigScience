@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 
-import { BytesPipe } from 'angular-pipes';
+import { BytesPipe, TruncatePipe } from 'angular-pipes';
 
 import { AppFile } from '../../../models/app-file';
 
@@ -17,9 +17,18 @@ export class DataUploadComponent implements OnInit {
 
     ngOnInit() {
     }
+    
+    onFileSelectFormChange(event) {
+        console.log(event.target.files);
+    }
 
     onFilesAdded(fileList: AppFile[]) {
         this.files = this.files.concat(fileList);
+    }
+
+    upload(file: AppFile) {
+        console.dir(file);
+        file.startUpload();
     }
 
 }
