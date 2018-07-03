@@ -1,6 +1,4 @@
-import { Deserializable } from '../interfaces/deserializable';
-import { Constants } from '../constants';
-import { v4 as uuid } from 'uuid';
+import { IDeserializable } from '../interfaces/deserializable';
 
 enum Status {
     VALID,
@@ -9,12 +7,14 @@ enum Status {
     UPLOADED
 }
 
-export class AppFile implements Deserializable {
+export class AppFile implements IDeserializable {
     static readonly Status = Status;
 
     private file: File;
     private _status: Status;
-    private uuid: string;
+
+    constructor() {
+    }
 
     deserialize(file: any): this {
         this.file = file;
@@ -40,25 +40,4 @@ export class AppFile implements Deserializable {
     get type(): string {
         return this.file.type;
     }
-
-    startUpload() {
-        this.uuid = uuid();
-        let uploads: any = localStorage.getItem(Constants.LOCAL_STORAGE.UPLOADS);
-        if(uploads == null) {
-            console.log('CREATING UPLOADS ARRAY');
-            uploads = new Array();
-        }
-        uploads[uuid] = {};
-        localStorage.setItem(Constants.LOCAL_STORAGE.UPLOADS, uploads);
-    }
-    
-    pauseUpload() {
-    }
-
-    resumeUpload() {
-    }
-
-    cancelUpload() {
-    }
-
 }

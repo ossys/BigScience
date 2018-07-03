@@ -9,6 +9,7 @@ import { NgMathPipesModule, NgStringPipesModule } from 'angular-pipes';
 
 /* Services */
 import { EndpointService } from './services/endpoint/endpoint.service';
+import { StorageService } from './services/storage/storage.service';
 
 /* Home Components */
 import { AppComponent } from './app.component';

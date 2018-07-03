@@ -26,9 +26,4 @@ export class DataUploadComponent implements OnInit {
         this.files = this.files.concat(fileList);
     }
 
-    upload(file: AppFile) {
-        console.dir(file);
-        file.startUpload();
-    }
-
 }

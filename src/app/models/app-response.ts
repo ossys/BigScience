@@ -1,6 +1,6 @@
-import { Deserializable } from '../interfaces/deserializable';
+import { IDeserializable } from '../interfaces/deserializable';
 
-export class AppResponse implements Deserializable {
+export class AppResponse implements IDeserializable {
   success: boolean = false;
   message: string;
   data: any = {};

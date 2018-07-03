@@ -4,7 +4,6 @@ import { Observable } from 'rxjs/Rx';
 
 import { Constants } from '../../constants';
 import { AppResponse } from '../../models/app-response';
-import { AppFile } from '../../models/app-file';
 
 @Injectable({
   providedIn: 'root'
@@ -33,7 +32,7 @@ export class EndpointService {
     });
   }
 
-  dataUpload(filename: string, file: AppFile): Observable<AppResponse> {
+  dataUpload(filename: string): Observable<AppResponse> {
     return this.http.post<AppResponse>(Constants.URL.REGISTER, {
         filename: filename
       }, {
