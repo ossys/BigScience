@@ -9,4 +9,7 @@ export class Constants {
   public static LOCAL_STORAGE = {
     UPLOADS: 'uploads'
   };
+  public static FILE = {
+    CHUNK_SIZE_BYTES: 1048576
+  };
 }

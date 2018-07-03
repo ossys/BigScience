@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 
 import { BytesPipe, TruncatePipe } from 'angular-pipes';
 
+import { FileService } from '../../../services/file/file.service';
 import { AppFile } from '../../../models/app-file';
 
 @Component({
@@ -13,17 +14,21 @@ export class DataUploadComponent implements OnInit {
 
     private files: AppFile[] = [];
 
-    constructor() { }
+    constructor(private fileService: FileService) { }
 
     ngOnInit() {
     }
-    
+
     onFileSelectFormChange(event) {
         console.log(event.target.files);
     }
 
     onFilesAdded(fileList: AppFile[]) {
         this.files = this.files.concat(fileList);
+    }
+
+    upload(file) {
+        this.fileService.startUpload(file);
     }
 
 }

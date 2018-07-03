@@ -14,7 +14,7 @@ export class StorageService {
     }
 
     // add value to storage
-    add(key: string, item: string) {
+    set(key: string, item: string) {
         if (this.localStorageSupported) {
             localStorage.setItem(key, item);
         }
