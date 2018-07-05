@@ -46,12 +46,18 @@ export class FileService {
         this.processChunks(processModel).subscribe({
             error: (processModel) => { },
             next: (processModel) => {
-                processModel.round++;
-                processModel.startChunk = processModel.round * Constants.FILE.ROUND_SIZE;
-                processModel.endChunk = (processModel.totalChunks < Constants.FILE.ROUND_SIZE) ? processModel.totalChunks : (processModel.round < processModel.totalChunks - 1) ? ((processModel.round + 1) * Constants.FILE.ROUND_SIZE) : processModel.totalChunks;
-                this.callRound(processModel);
+                console.log('Complete: ' + processModel.percentage + '%');
+                console.log('Est Time (s): ' + processModel.estTime + 's');
+                // IF ROUND COMPLETE, CALL NEXT ROUND
+                if(processModel.status == AppFileProcessModel.Status.COMPLETE) {
+                    processModel.round++;
+                    processModel.startChunk = processModel.round * Constants.FILE.ROUND_SIZE;
+                    processModel.endChunk = (processModel.totalChunks < Constants.FILE.ROUND_SIZE) ? processModel.totalChunks : (processModel.round < processModel.totalChunks - 1) ? ((processModel.round + 1) * Constants.FILE.ROUND_SIZE) : processModel.totalChunks;
+                    this.callRound(processModel);
+                }
             },
             complete: () => {
+                // ALL ROUNDS FINISHED, CALCULATE HASH
                 processModel.file.sha256 = new Buffer(processModel.sha256.digest()).toString('hex');
                 console.log('FILE COMPLETE: ' + processModel.file.sha256);
             }
@@ -74,32 +80,36 @@ export class FileService {
                 error: (chunk: AppFileChunkModel) => { console.log('ERROR'); },
                 next: (chunk: AppFileChunkModel) => {
                     if (chunk.event.type == "loadstart") {
-                        //                        this.timerService.start();
-                        //                    console.log(chunk);
+                        this.timerService.start();
+                        //console.log(chunk);
                     } else if (chunk.event.type == "progress") {
-                        //                    console.dir(chunk);
+                        //console.dir(chunk);
                     } else if (chunk.event.type == "loadend" && chunk.event.target.readyState == FileReader.DONE) {
-                        console.log(chunk.id);
+                        //console.log(chunk);
                         processModel.sha256.update(new Uint8Array(chunk.event.target.result));
-                        //                        this.timerService.stop();
+                        this.timerService.stop();
 
                         // Percentage
-                        //                        totalBytes += chunk.event.total;
-                        //                        percentage = (totalBytes / file.size) * 100;
-                        //                        console.log(percentage);
+                        processModel.totalBytes += chunk.event.total;
+                        processModel.percentage = (processModel.totalBytes / processModel.file.size) * 100;
+                        
+                        //TODO: Fix Issue Where 100% prints to console like 15-20 times last step... Why?! Very worrisome....
+                        // https://github.com/ossys/BigScience/issues/4
 
                         // Est Time Remaining
-                        //                        avgBps = (((Constants.FILE.CHUNK_SIZE_BYTES / this.timerService.getTime()) + avgBps) / 2;
-                        //                        estTime = ((file.size - totalBytes) / avgBps) / 1000;
-                        //                        console.log('Est Time (s): ' + estTime + 's');
-                        //                        this.timerService.clear();
+                        processModel.avgBytesPerSec = (((Constants.FILE.CHUNK_SIZE_BYTES / this.timerService.getTime()) + processModel.avgBytesPerSec) / 2;
+                        processModel.estTime = ((processModel.file.size - processModel.totalBytes) / processModel.avgBytesPerSec) / 1000;
+                        this.timerService.clear();
+                        
+                        observer.next(processModel);
                     }
                 },
                 complete: () => {
-                    console.log('ROUND COMPLETE');
+                    // ROUND COMPLETE
                     if (processModel.round < processModel.totalRounds-1) {
                         observer.next(processModel);
                     } else {
+                        processModel.status = AppFileProcessModel.Status.COMPLETE;
                         observer.complete();
                     }
                 }

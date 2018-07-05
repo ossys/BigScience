@@ -1,19 +1,35 @@
 import { AppFileModel } from './app-file.model';
 
+enum Status {
+    PROCESSING,
+    COMPLETE
+}
+
 export class AppFileProcessModel {
-    _file: AppFileModel;
-    _sha256: any;
-    _totalRounds: number = 0;
-    _totalChunks: number = 0;
-    _round: number = 0;
-    _startChunk: number = 0;
-    _endChunk: number = 0;
-    _totalBytes: number = 0;
-    _percentage: number = 0;
-    _avgBytesPerSec: number = 0;
-    _estTime: number = 0;
+    static readonly Status = Status;
+
+    private _status: Status = Status.PROCESSING;
+    private _file: AppFileModel;
+    private _sha256: any;
+    private _totalRounds: number = 0;
+    private _totalChunks: number = 0;
+    private _round: number = 0;
+    private _startChunk: number = 0;
+    private _endChunk: number = 0;
+    private _totalBytes: number = 0;
+    private _percentage: number = 0;
+    private _avgBytesPerSec: number = 0;
+    private _estTime: number = 0;
 
     constructor() {
+    }
+
+    get status(): Status {
+        return this._status;
+    }
+
+    set status(status: Status) {
+        this._status = status;
     }
 
     get file(): AppFileModel {
