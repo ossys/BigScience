@@ -10,7 +10,7 @@ export class Constants {
     UPLOADS: 'uploads'
   };
   public static FILE = {
-    CHUNK_SIZE_BYTES: 10485760,
+    CHUNK_SIZE_BYTES: 1048576,
     ROUND_SIZE: 100
   };
 }

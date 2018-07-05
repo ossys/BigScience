@@ -20,8 +20,6 @@ import { AppFileChunkModel } from '../../models/app-file-chunk.model';
 })
 export class FileService {
 
-
-
     constructor(private endpointService: EndpointService,
         private storageService: StorageService,
         private timerService: TimerService) { }
@@ -46,20 +44,42 @@ export class FileService {
         this.processChunks(processModel).subscribe({
             error: (processModel) => { },
             next: (processModel) => {
-                console.log('Complete: ' + processModel.percentage + '%');
-                console.log('Est Time (s): ' + processModel.estTime + 's');
-                // IF ROUND COMPLETE, CALL NEXT ROUND
-                if(processModel.status == AppFileProcessModel.Status.COMPLETE) {
+                if (processModel.status == AppFileProcessModel.Status.COMPLETE) {
                     processModel.round++;
                     processModel.startChunk = processModel.round * Constants.FILE.ROUND_SIZE;
                     processModel.endChunk = (processModel.totalChunks < Constants.FILE.ROUND_SIZE) ? processModel.totalChunks : (processModel.round < processModel.totalChunks - 1) ? ((processModel.round + 1) * Constants.FILE.ROUND_SIZE) : processModel.totalChunks;
+                    processModel.status = AppFileProcessModel.Status.PROCESSING;
                     this.callRound(processModel);
+                } else {
+                    console.log(processModel.percentage);
+//                    console.log(processModel.estTime);
                 }
             },
             complete: () => {
-                // ALL ROUNDS FINISHED, CALCULATE HASH
                 processModel.file.sha256 = new Buffer(processModel.sha256.digest()).toString('hex');
                 console.log('FILE COMPLETE: ' + processModel.file.sha256);
+
+                let uploads: any = this.storageService.get(Constants.LOCAL_STORAGE.UPLOADS);
+
+                if (uploads == null || uploads.length == 0) {
+                    uploads = {};
+                } else {
+                    uploads = JSON.parse(uploads);
+                }
+
+                let file_upload = uploads[processModel.file.sha256];
+                if (file_upload == null) {
+                    uploads[processModel.file.sha256] = {
+                        created: new Date(),
+                        name: processModel.file.name,
+                        size: processModel.file.size,
+                        lastModified: processModel.file.lastModified,
+                        lastModifiedDate: processModel.file.lastModifiedDate,
+                        chunks_uploading: Array.apply(null, { length: 10 }).map(Function.call, Number),
+                        total_chunks: Math.floor(processModel.file.size / Constants.FILE.CHUNK_SIZE_BYTES) + ((processModel.file.size / Constants.FILE.CHUNK_SIZE_BYTES) > 0 ? 1 : 0)
+                    };
+                    this.storageService.set(Constants.LOCAL_STORAGE.UPLOADS, JSON.stringify(uploads));
+                }
             }
         });
     }
@@ -85,31 +105,28 @@ export class FileService {
                     } else if (chunk.event.type == "progress") {
                         //console.dir(chunk);
                     } else if (chunk.event.type == "loadend" && chunk.event.target.readyState == FileReader.DONE) {
-                        //console.log(chunk);
+                        //console.log(chunk.id);
                         processModel.sha256.update(new Uint8Array(chunk.event.target.result));
                         this.timerService.stop();
 
                         // Percentage
                         processModel.totalBytes += chunk.event.total;
                         processModel.percentage = (processModel.totalBytes / processModel.file.size) * 100;
-                        
-                        //TODO: Fix Issue Where 100% prints to console like 15-20 times last step... Why?! Very worrisome....
-                        // https://github.com/ossys/BigScience/issues/4
 
                         // Est Time Remaining
                         processModel.avgBytesPerSec = (((Constants.FILE.CHUNK_SIZE_BYTES / this.timerService.getTime()) + processModel.avgBytesPerSec) / 2;
                         processModel.estTime = ((processModel.file.size - processModel.totalBytes) / processModel.avgBytesPerSec) / 1000;
                         this.timerService.clear();
-                        
+
                         observer.next(processModel);
                     }
                 },
                 complete: () => {
                     // ROUND COMPLETE
-                    if (processModel.round < processModel.totalRounds-1) {
+                    if (processModel.round < processModel.totalRounds - 1) {
+                        processModel.status = AppFileProcessModel.Status.COMPLETE;
                         observer.next(processModel);
                     } else {
-                        processModel.status = AppFileProcessModel.Status.COMPLETE;
                         observer.complete();
                     }
                 }
@@ -119,28 +136,6 @@ export class FileService {
     }
 
     startUpload(file: AppFileModel) {
-        let uploads: any = this.storageService.get(Constants.LOCAL_STORAGE.UPLOADS);
-
-        if (uploads == null || uploads.length == 0) {
-            uploads = {};
-        } else {
-            uploads = JSON.parse(uploads);
-        }
-
-        let file_upload = uploads[file.sha256];
-        if (file_upload == null) {
-            uploads[file.sha256] = {
-                created: new Date(),
-                name: file.name,
-                size: file.size,
-                lastModified: file.lastModified,
-                lastModifiedDate: file.lastModifiedDate,
-                chunks_uploading: Array.apply(null, { length: 10 }).map(Function.call, Number),
-                total_chunks: Math.floor(file.size / Constants.FILE.CHUNK_SIZE_BYTES) + ((file.size / Constants.FILE.CHUNK_SIZE_BYTES) > 0 ? 1 : 0)
-            };
-            this.storageService.set(Constants.LOCAL_STORAGE.UPLOADS, JSON.stringify(uploads));
-        }
-
         let sha256 = new fastsha256.Hash();
         for (let chunk_id = 0; chunk_id < uploads[file.sha256].chunks_in_process.length; chunk_id++) {
             file.getChunk(chunk_id).subscribe({

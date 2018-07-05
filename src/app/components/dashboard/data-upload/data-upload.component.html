@@ -29,7 +29,7 @@
                 <h3>Selected Files</h3>
                 <div *ngFor="let file of files">
                   <div class="appFile">
-                    <div class="appFileTitle">
+                    <div class="appFileTitle clearfix align-middle">
                         {{ file.name | truncate: 32: '...': false }} 
                         ({{ file.size | bytes }})
                         <button class="btn btn-danger btn-fill pull-right"><i class="pe-7s-close-circle"></i></button>
