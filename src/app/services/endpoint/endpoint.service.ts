@@ -13,7 +13,7 @@ import { AppFileChunkModel } from '../../models/app-file-chunk.model';
 })
 export class EndpointService {
   constructor(private http: HttpClient) { }
-    
+
   login(login: LoginModel): Observable<AppResponseModel> {
     return this.http.post<AppResponseModel>(Constants.URL.LOGIN, {
         email: login.email,

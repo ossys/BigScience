@@ -19,7 +19,6 @@ export class AppFileModel implements IDeserializable {
 
     private file: File;
     private _status: Status;
-    private _uuid: string;
     private _sha256: string;
 
     constructor() {
@@ -36,14 +35,6 @@ export class AppFileModel implements IDeserializable {
 
     set status(status: Status) {
         this._status = status;
-    }
-
-    get uuid(): string {
-        return this._uuid;
-    }
-
-    set uuid(uuid: string) {
-        this._uuid = uuid;
     }
 
     get sha256(): string {
@@ -90,14 +81,18 @@ export class AppFileModel implements IDeserializable {
             chunk.file = this.file;
             chunk.id = chunk_id;
             chunk.startByte = chunk_id * Constants.FILE.CHUNK_SIZE_BYTES;
-            chunk.endByte = (((chunk_id + 1) * Constants.FILE.CHUNK_SIZE_BYTES));
+            chunk.endByte = (((chunk_id + 1) * Constants.FILE.CHUNK_SIZE_BYTES)) < chunk.file.size ? (((chunk_id + 1) * Constants.FILE.CHUNK_SIZE_BYTES)) : chunk.file.size;
 
             let reader = new FileReader();
-            reader.onerror = (event) => {
+            reader.onloadstart = (event) => {
                 chunk.event = event;
-                observer.error(chunk);
+                observer.next(chunk);
             }
             reader.onprogress = (event) => {
+                chunk.event = event;
+                observer.next(chunk);
+            }
+            reader.onload = (event) => {
                 chunk.event = event;
                 observer.next(chunk);
             }
@@ -114,16 +109,12 @@ export class AppFileModel implements IDeserializable {
                 chunk.event = event;
                 observer.next(chunk);
             }
-            reader.onloadstart = (event) => {
+            reader.onerror = (event) => {
                 chunk.event = event;
-                observer.next(chunk);
+                observer.error(chunk);
             }
-            reader.onload = (event) => {
-                chunk.event = event;
-                observer.next(chunk);
-            }
-
             reader.readAsArrayBuffer(this.file.slice(chunk.startByte, chunk.endByte));
+
             return { unsubscribe() { } };
         });
     }
