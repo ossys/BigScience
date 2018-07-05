@@ -1,6 +1,6 @@
 import { IStorageItem } from '../interfaces/storage-item';
 
-export class StorageItem {
+export class StorageItemModel {
     key: string;
     value: any;
 

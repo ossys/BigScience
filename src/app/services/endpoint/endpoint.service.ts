@@ -3,7 +3,10 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs/Rx';
 
 import { Constants } from '../../constants';
-import { AppResponse } from '../../models/app-response';
+import { AppResponseModel } from '../../models/app-response.model';
+import { LoginModel } from '../../models/login.model';
+import { RegistrationModel } from '../../models/registration.model';
+import { AppFileChunkModel } from '../../models/app-file-chunk.model';
 
 @Injectable({
   providedIn: 'root'
@@ -11,30 +14,30 @@ import { AppResponse } from '../../models/app-response';
 export class EndpointService {
   constructor(private http: HttpClient) { }
     
-  login(email: string, password: string): Observable<AppResponse> {
-    return this.http.post<AppResponse>(Constants.URL.LOGIN, {
-        email: email,
-        password: password
+  login(login: LoginModel): Observable<AppResponseModel> {
+    return this.http.post<AppResponseModel>(Constants.URL.LOGIN, {
+        email: login.email,
+        password: login.password
       }, {
       headers: new HttpHeaders().set('Content-Type', 'application/json').set('Accept', 'application/json; version=' + Constants.API_VERSION)
     });
   }
 
-  register(email: string, username: string, first_name: string, last_name: string, password: string): Observable<AppResponse> {
-    return this.http.post<AppResponse>(Constants.URL.REGISTER, {
-        email: email,
-        username: username,
-        first_name: first_name,
-        last_name: last_name,
-        password: password
+  register(registration: RegistrationModel): Observable<AppResponseModel> {
+    return this.http.post<AppResponseModel>(Constants.URL.REGISTER, {
+        email: registration.email,
+        username: registration.username,
+        first_name: registration.first_name,
+        last_name: registration.last_name,
+        password: registration.password
       }, {
       headers: new HttpHeaders().set('Content-Type', 'application/json').set('Accept', 'application/json; version=' + Constants.API_VERSION)
     });
   }
 
-  dataUpload(filename: string): Observable<AppResponse> {
-    return this.http.post<AppResponse>(Constants.URL.REGISTER, {
-        filename: filename
+  dataUpload(chunk: AppFileChunkModel): Observable<AppResponseModel> {
+    return this.http.post<AppResponseModel>(Constants.URL.UPLOAD, {
+
       }, {
       headers: new HttpHeaders().set('Content-Type', 'application/json').set('Accept', 'application/json; version=' + Constants.API_VERSION)
     });

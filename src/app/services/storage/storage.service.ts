@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 
-import { StorageItem } from '../../models/storage-item';
+import { StorageItemModel } from '../../models/storage-item.model';
 
 @Injectable({
     providedIn: 'root'
@@ -21,14 +21,14 @@ export class StorageService {
     }
 
     // get all values from storage (all items)
-    getAllItems(): Array<StorageItem> {
-        var list = new Array<StorageItem>();
+    getAllItems(): Array<StorageItemModel> {
+        var list = new Array<StorageItemModel>();
 
         for (var i = 0; i < localStorage.length; i++) {
             var key = localStorage.key(i);
             var value = localStorage.getItem(key);
 
-            list.push(new StorageItem({
+            list.push(new StorageItemModel({
                 key: key,
                 value: value
             }));

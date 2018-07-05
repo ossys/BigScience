@@ -1,6 +1,6 @@
 import { IDeserializable } from '../interfaces/deserializable';
 
-export class AppResponse implements IDeserializable {
+export class AppResponseModel implements IDeserializable {
   success: boolean = false;
   message: string;
   data: any = {};

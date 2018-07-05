@@ -32,7 +32,7 @@
                     <div class="appFileTitle">
                         {{ file.name | truncate: 32: '...': false }} 
                         ({{ file.size | bytes }})
-                        <button class="btn btn-danger btn-fill pull-right"><i class="pe-7s-trash"></i></button>
+                        <button class="btn btn-danger btn-fill pull-right"><i class="pe-7s-close-circle"></i></button>
                         <button class="btn btn-primary btn-fill btn-wd pull-right" (click)="upload(file)">Upload</button>
                     </div>
                     <div class="appFileBody">

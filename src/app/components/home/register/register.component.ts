@@ -2,6 +2,7 @@ import { Component, OnInit, AfterViewInit } from '@angular/core';
 import { Router } from '@angular/router';
 
 import { EndpointService } from '../../../services/endpoint/endpoint.service';
+import { RegistrationModel } from '../../../models/registration.model';
 
 @Component({
     selector: 'app-register',
@@ -10,11 +11,7 @@ import { EndpointService } from '../../../services/endpoint/endpoint.service';
 })
 export class RegisterComponent implements OnInit {
 
-    email: string;
-    username: string;
-    first_name: string;
-    last_name: string;
-    password: string;
+    registration: RegistrationModel = new RegistrationModel();
 
     constructor(private router: Router, private endpointService: EndpointService) { }
 
@@ -31,7 +28,7 @@ export class RegisterComponent implements OnInit {
     }
 
     register() {
-        this.endpointService.register(this.email, this.username, this.first_name, this.last_name, this.password).subscribe(result => {
+        this.endpointService.register(this.registration).subscribe(result => {
             this.router.navigate(['dashboard']);
         });
     }

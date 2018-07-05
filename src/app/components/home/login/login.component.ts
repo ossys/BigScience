@@ -2,6 +2,7 @@ import { Component, OnInit, AfterViewInit } from '@angular/core';
 import { Router } from '@angular/router';
 
 import { EndpointService } from '../../../services/endpoint/endpoint.service';
+import { LoginModel } from '../../../models/login.model';
 
 @Component({
   selector: 'app-login',
@@ -10,8 +11,7 @@ import { EndpointService } from '../../../services/endpoint/endpoint.service';
 })
 export class LoginComponent implements OnInit {
 
-  email: string;
-  password: string;
+  userLogin: LoginModel = new LoginModel();
 
   constructor(private router: Router, private endpointService: EndpointService) { }
 
@@ -29,7 +29,7 @@ export class LoginComponent implements OnInit {
   }
 
   login() {
-    this.endpointService.login(this.email, this.password).subscribe(result => {
+    this.endpointService.login(this.userLogin).subscribe(result => {
       if(result.success) {
         this.router.navigate(['dashboard']);
       }
