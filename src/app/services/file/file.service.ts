@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { concat } from 'rxjs/operators';
 import { Observable } from 'rxjs/Observable';
+import { Observer } from 'rxjs/Observer';
 import { Buffer } from 'buffer';
 
 import * as fastsha256 from 'fast-sha256';
@@ -11,6 +12,7 @@ import { TimerService } from '../../services/timer/timer.service';
 
 import { Constants } from '../../constants';
 import { AppFileModel } from '../../models/app-file.model';
+import { AppFileProcessModel } from '../../models/app-file-process.model';
 import { AppFileChunkModel } from '../../models/app-file-chunk.model';
 
 @Injectable({
@@ -18,54 +20,91 @@ import { AppFileChunkModel } from '../../models/app-file-chunk.model';
 })
 export class FileService {
 
+
+
     constructor(private endpointService: EndpointService,
         private storageService: StorageService,
         private timerService: TimerService) { }
 
     processFile(file: AppFileModel) {
-        let num_chunks = Math.ceil(file.size / Constants.FILE.CHUNK_SIZE_BYTES);
-        let sha256 = new fastsha256.Hash();
-        let chain: Observable<AppFileChunkModel>;
-        
-        // Percentage
-        let totalBytes = 0;
-        let percentage = 0;
-        
-        // Est Time Left
-        let estTime = 0;
-        
-        for (let i = 0; i < num_chunks; i++) {
-            if (chain) {
-                chain = chain.pipe(concat(file.getChunk(i)));
-            } else {
-                chain = file.getChunk(i);
-            }
-        }
-        chain.subscribe({
-            error: (chunk: AppFileChunkModel) => { console.log('ERROR'); },
-            next: (chunk: AppFileChunkModel) => {
-                if (chunk.event.type == "loadstart") {
-                    this.timerService.start();
-//                    console.log(chunk);
-                } else if (chunk.event.type == "progress") {
-//                    console.dir(chunk);
-                } else if (chunk.event.type == "loadend" && chunk.event.target.readyState == FileReader.DONE) {
-                    sha256.update(new Uint8Array(chunk.event.target.result));
-                    this.timerService.stop();
-//                    console.log('BLOCK B/s: ' + );
-                    
-                    // Percentage
-                    totalBytes += chunk.event.total;
-                    percentage = (totalBytes / file.size)*100;
-                    console.log(percentage);
-                    
-                    // Est Time Remaining
-                    estTime = ((file.size - totalBytes) / (Constants.FILE.CHUNK_SIZE_BYTES / this.timerService.getTime()))/1000;
-                    console.log('Est Time (s): ' + estTime + 's');
-                    this.timerService.clear();
-                }
+        let processModel: AppFileProcessModel = new AppFileProcessModel();
+        processModel.file = file;
+        processModel.sha256 = new fastsha256.Hash();
+        processModel.totalChunks = Math.ceil(file.size / Constants.FILE.CHUNK_SIZE_BYTES);
+        processModel.totalRounds = Math.ceil(processModel.totalChunks / Constants.FILE.ROUND_SIZE);
+        processModel.startChunk = processModel.round * Constants.FILE.ROUND_SIZE;
+        processModel.endChunk = (processModel.totalChunks < Constants.FILE.ROUND_SIZE) ? processModel.totalChunks : (processModel.round < processModel.totalChunks - 1) ? ((processModel.round + 1) * Constants.FILE.ROUND_SIZE) : processModel.totalChunks;
+
+        console.log('PROCESSING FILE: ' + file.name + '(' + file.size + ' / ' + Constants.FILE.CHUNK_SIZE_BYTES + ')');
+        console.log('NUM CHUNKS: ' + processModel.totalChunks);
+        console.log('NUM ROUNDS: ' + processModel.totalRounds);
+
+        this.callRound(processModel);
+    }
+
+    callRound(processModel: AppFileProcessModel) {
+        this.processChunks(processModel).subscribe({
+            error: (processModel) => { },
+            next: (processModel) => {
+                processModel.round++;
+                processModel.startChunk = processModel.round * Constants.FILE.ROUND_SIZE;
+                processModel.endChunk = (processModel.totalChunks < Constants.FILE.ROUND_SIZE) ? processModel.totalChunks : (processModel.round < processModel.totalChunks - 1) ? ((processModel.round + 1) * Constants.FILE.ROUND_SIZE) : processModel.totalChunks;
+                this.callRound(processModel);
             },
-            complete: () => { file.sha256 = new Buffer(sha256.digest()).toString('hex'); console.log('HASH: ' + file.sha256); }
+            complete: () => {
+                processModel.file.sha256 = new Buffer(processModel.sha256.digest()).toString('hex');
+                console.log('FILE COMPLETE: ' + processModel.file.sha256);
+            }
+        });
+    }
+
+    processChunks(processModel: AppFileProcessModel): Observable<AppFileProcessModel> {
+        return new Observable<AppFileProcessModel>((observer: Observer<AppFileProcessModel>) => {
+            let chain: Observable<AppFileChunkModel>;
+
+            for (let i = processModel.startChunk; i < processModel.endChunk; i++) {
+                if (chain) {
+                    chain = chain.pipe(concat(processModel.file.getChunk(i)));
+                } else {
+                    chain = processModel.file.getChunk(i);
+                }
+            }
+
+            chain.subscribe({
+                error: (chunk: AppFileChunkModel) => { console.log('ERROR'); },
+                next: (chunk: AppFileChunkModel) => {
+                    if (chunk.event.type == "loadstart") {
+                        //                        this.timerService.start();
+                        //                    console.log(chunk);
+                    } else if (chunk.event.type == "progress") {
+                        //                    console.dir(chunk);
+                    } else if (chunk.event.type == "loadend" && chunk.event.target.readyState == FileReader.DONE) {
+                        console.log(chunk.id);
+                        processModel.sha256.update(new Uint8Array(chunk.event.target.result));
+                        //                        this.timerService.stop();
+
+                        // Percentage
+                        //                        totalBytes += chunk.event.total;
+                        //                        percentage = (totalBytes / file.size) * 100;
+                        //                        console.log(percentage);
+
+                        // Est Time Remaining
+                        //                        avgBps = (((Constants.FILE.CHUNK_SIZE_BYTES / this.timerService.getTime()) + avgBps) / 2;
+                        //                        estTime = ((file.size - totalBytes) / avgBps) / 1000;
+                        //                        console.log('Est Time (s): ' + estTime + 's');
+                        //                        this.timerService.clear();
+                    }
+                },
+                complete: () => {
+                    console.log('ROUND COMPLETE');
+                    if (processModel.round < processModel.totalRounds-1) {
+                        observer.next(processModel);
+                    } else {
+                        observer.complete();
+                    }
+                }
+            });
+            return { unsubscribe() { } };
         });
     }
 
