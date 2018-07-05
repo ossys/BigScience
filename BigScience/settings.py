@@ -142,6 +142,10 @@ AUTH_USER_MODEL = 'models.UserProfile'
 
 APPEND_SLASH = False
 
+# File Upload Settings for larger Payloads
+DATA_UPLOAD_MAX_MEMORY_SIZE = 5242880
+FILE_UPLOAD_MAX_MEMORY_SIZE = 5242880
+
 # CORS Configuration: https://github.com/ottoyiu/django-cors-headers/
 CORS_ORIGIN_ALLOW_ALL = True
 

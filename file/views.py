@@ -8,6 +8,7 @@ class Upload(APIView):
     permission_classes = ()
 
     def post(self, request, *args, **kwargs):
+        print('POST UPLOAD >>> ' + request.data['file.sha256'])
         return Response(
           models.Response(success=False, message='Not Yet Implemented').dict(),
           status=501,
