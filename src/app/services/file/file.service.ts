@@ -154,7 +154,7 @@ export class FileService {
                     }
                 },
                 error: (chunk: AppFileChunkModel) => { console.log('ERROR'); console.log(event); },
-                complete: () => { console.log('COMPLETE FILE READ'); }
+                complete: () => { console.log('COMPLETE CHUNK READ'); }
             });
         }
     }

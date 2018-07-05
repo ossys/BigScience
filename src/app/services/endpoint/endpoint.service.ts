@@ -36,9 +36,20 @@ export class EndpointService {
   }
 
   dataUpload(chunk: AppFileChunkModel): Observable<AppResponseModel> {
-    return this.http.post<AppResponseModel>(Constants.URL.UPLOAD, {
+    console.log(chunk);
+    const formData: FormData = new FormData();
+    formData.append('chunk_sha256', chunk.sha256);
+    formData.append('chunk_id', chunk.id);
+    formData.append('chunk_start_byte', chunk.startByte);
+    formData.append('chunk_end_byte', chunk.endByte);
+    formData.append('file_sha256', chunk.file.sha256);
+    formData.append('file_last_modified_date', chunk.file.lastModifiedDate.toString());
+    formData.append('file_name', chunk.file.name);
+    formData.append('file_size', chunk.file.size);
+    formData.append('data', new Uint8Array(chunk.event.target.result));
 
-      }, {
+    return this.http.post<AppResponseModel>(Constants.URL.UPLOAD, formData, {
+      reportProgress: true,
       headers: new HttpHeaders().set('Content-Type', 'application/json').set('Accept', 'application/json; version=' + Constants.API_VERSION)
     });
   }

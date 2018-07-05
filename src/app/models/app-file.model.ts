@@ -17,7 +17,7 @@ enum Status {
 export class AppFileModel implements IDeserializable {
     static readonly Status = Status;
 
-    private file: File;
+    private file: AppFileModel;
     private _status: Status;
     private _sha256: string;
 
@@ -78,7 +78,7 @@ export class AppFileModel implements IDeserializable {
     getChunk(chunk_id: number): Observable<AppFileChunkModel> {
         return new Observable<AppFileChunkModel>((observer: Observer<AppFileChunkModel>) => {
             let chunk = new AppFileChunkModel();
-            chunk.file = this.file;
+            chunk.file = this;
             chunk.id = chunk_id;
             chunk.startByte = chunk_id * Constants.FILE.CHUNK_SIZE_BYTES;
             chunk.endByte = (((chunk_id + 1) * Constants.FILE.CHUNK_SIZE_BYTES)) < chunk.file.size ? (((chunk_id + 1) * Constants.FILE.CHUNK_SIZE_BYTES)) : chunk.file.size;
