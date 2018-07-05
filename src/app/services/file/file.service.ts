@@ -52,7 +52,7 @@ export class FileService {
                     this.callRound(processModel);
                 } else {
                     console.log(processModel.percentage);
-//                    console.log(processModel.estTime);
+                    //                    console.log(processModel.estTime);
                 }
             },
             complete: () => {
@@ -136,9 +136,11 @@ export class FileService {
     }
 
     startUpload(file: AppFileModel) {
-        let sha256 = new fastsha256.Hash();
-        for (let chunk_id = 0; chunk_id < uploads[file.sha256].chunks_in_process.length; chunk_id++) {
-            file.getChunk(chunk_id).subscribe({
+        let uploads: any = JSON.parse(this.storageService.get(Constants.LOCAL_STORAGE.UPLOADS));
+        console.log('GETTING FILE HASH: ' + file.sha256);
+        for (let chunk_id = 0; chunk_id < uploads[file.sha256].chunks_uploading.length; chunk_id++) {
+            let sha256 = new fastsha256.Hash();
+            file.getChunk(uploads[file.sha256].chunks_uploading[chunk_id]).subscribe({
                 next: (chunk: AppFileChunkModel) => {
                     if (chunk.event.type == "progress") {
                     } else if (chunk.event.type == "loadend" && chunk.event.target.readyState == FileReader.DONE) {
