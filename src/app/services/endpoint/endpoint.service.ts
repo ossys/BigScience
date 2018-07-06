@@ -39,14 +39,14 @@ export class EndpointService {
     console.log(chunk);
     const formData: FormData = new FormData();
     formData.append('chunk.sha256', chunk.sha256);
-    formData.append('chunk.id', chunk.id);
-    formData.append('chunk.startByte', chunk.startByte);
-    formData.append('chunk.endByte', chunk.endByte);
+    formData.append('chunk.id', chunk.id.toString());
+    formData.append('chunk.startByte', chunk.startByte.toString());
+    formData.append('chunk.endByte', chunk.endByte.toString());
     formData.append('file.sha256', chunk.file.sha256);
-    formData.append('file.lastModifiedDate', chunk.file.lastModifiedDate.toString());
+    formData.append('file.lastModifiedDate', chunk.file.lastModifiedDate.toString()); //YYYY-MM-DD HH:MM[:ss[.uuuuuu]][TZ]
     formData.append('file.name', chunk.file.name);
-    formData.append('file.size', chunk.file.size);
-    formData.append('data', new Uint8Array(chunk.event.target.result));
+    formData.append('file.size', chunk.file.size.toString());
+    formData.append('data', chunk.event.target.result);
 
     return this.http.post<AppResponseModel>(Constants.URL.UPLOAD, formData, {
       reportProgress: true,

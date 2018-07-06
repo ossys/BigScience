@@ -17,7 +17,7 @@ enum Status {
 export class AppFileModel implements IDeserializable {
     static readonly Status = Status;
 
-    private file: AppFileModel;
+    private file: File;
     private _status: Status;
     private _sha256: string;
 

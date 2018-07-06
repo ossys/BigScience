@@ -114,7 +114,7 @@ export class FileService {
                         processModel.percentage = (processModel.totalBytes / processModel.file.size) * 100;
 
                         // Est Time Remaining
-                        processModel.avgBytesPerSec = (((Constants.FILE.CHUNK_SIZE_BYTES / this.timerService.getTime()) + processModel.avgBytesPerSec) / 2;
+                        processModel.avgBytesPerSec = ((Constants.FILE.CHUNK_SIZE_BYTES / this.timerService.getTime()) + processModel.avgBytesPerSec) / 2;
                         processModel.estTime = ((processModel.file.size - processModel.totalBytes) / processModel.avgBytesPerSec) / 1000;
                         this.timerService.clear();
 

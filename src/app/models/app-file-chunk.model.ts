@@ -1,7 +1,7 @@
 export class AppFileChunkModel {
     
     private _event: Event;
-    private _file: File;
+    private _file: any;
     private _id: number;
     private _startByte: number;
     private _endByte: number;
@@ -18,11 +18,11 @@ export class AppFileChunkModel {
         this._event = event;
     }
 
-    get file(): File {
+    get file(): any {
         return this._file;
     }
 
-    set file(file: File) {
+    set file(file: any) {
         this._file = file;
     }
 
