@@ -10,16 +10,18 @@ class Upload(APIView):
     permission_classes = ()
 
     def post(self, request, *args, **kwargs):
+        print('TYPE >>>>>>>>>>>>>>>>>>>>>>')
+        print(b'\x00\x46\xFE')#type(request.data['chunk.data'].read(4)))
         chunk = models.FileChunk(
         chunk_sha256 = request.data['chunk.sha256'],
         chunk_id = request.data['chunk.id'],
         chunk_startByte = request.data['chunk.startByte'],
         chunk_endByte = request.data['chunk.endByte'],
+        chunk_data = b'\x00\x46\xFE',
         file_sha256 = request.data['file.sha256'],
-        file_lastModifiedDate = datetime.strptime(request.data['file.lastModifiedDate'], 'YYYY-MM-DD HH:MM[:ss[.uuuuuu]][TZ]'),
+        file_lastModifiedDate = datetime.strptime(request.data['file.lastModifiedDate'], '%Y-%m-%d %H:%M:%SZ'),
         file_name = request.data['file.name'],
         file_size = request.data['file.size'],
-        data = request.data['data']
         )
         chunk.save()
 

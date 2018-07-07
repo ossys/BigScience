@@ -9,7 +9,7 @@ dependencies:
   - djangorestframework=3.8.2
   - pyjwt=1.6.4
   - pip:
-    - djongo==1.2.29
+    - djongo==1.2.23
     - djangorestframework-jwt==1.11.0
     - django-cors-headers==2.2.0
     - django-nose==1.4.5

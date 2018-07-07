@@ -96,13 +96,12 @@ class FileChunk(models.Model):
     chunk_id = models.IntegerField()
     chunk_startByte = models.IntegerField()
     chunk_endByte = models.IntegerField()
+    chunk_data = models.BinaryField()
     file_sha256 = models.CharField(max_length=64)
     file_lastModifiedDate = models.DateTimeField(auto_now=False)
     file_name = models.CharField(max_length=256)
     file_size = models.IntegerField()
-    data = models.BinaryField()
 
-    REQUIRED_FIELDS = ['chunk_sha256','chunk_id','chunk_startByte',
-                       'chunk_endByte','file_sha256','file_lastModifiedDate',
-                       'file_name','file_size','data']
-
+#     REQUIRED_FIELDS = ['chunk_sha256','chunk_id','chunk_startByte',
+#                        'chunk_endByte','file_sha256','file_lastModifiedDate',
+#                        'file_name','file_size','chunk_data']

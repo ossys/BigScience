@@ -2,6 +2,8 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs/Rx';
 
+import 'datejs';
+
 import { Constants } from '../../constants';
 import { AppResponseModel } from '../../models/app-response.model';
 import { LoginModel } from '../../models/login.model';
@@ -36,17 +38,16 @@ export class EndpointService {
   }
 
   dataUpload(chunk: AppFileChunkModel): Observable<AppResponseModel> {
-    console.log(chunk);
     const formData: FormData = new FormData();
-    formData.append('chunk.sha256', chunk.sha256);
-    formData.append('chunk.id', chunk.id.toString());
-    formData.append('chunk.startByte', chunk.startByte.toString());
-    formData.append('chunk.endByte', chunk.endByte.toString());
-    formData.append('file.sha256', chunk.file.sha256);
-    formData.append('file.lastModifiedDate', chunk.file.lastModifiedDate.toString()); //YYYY-MM-DD HH:MM[:ss[.uuuuuu]][TZ]
-    formData.append('file.name', chunk.file.name);
-    formData.append('file.size', chunk.file.size.toString());
-    formData.append('data', chunk.event.target.result);
+    formData.set('chunk.sha256', chunk.sha256);
+    formData.set('chunk.id', chunk.id.toString());
+    formData.set('chunk.startByte', chunk.startByte.toString());
+    formData.set('chunk.endByte', chunk.endByte.toString());
+    formData.set('chunk.data', new Blob([new Uint8Array(chunk.event.target.result)]));
+    formData.set('file.sha256', chunk.file.sha256);
+    formData.set('file.lastModifiedDate', chunk.file.lastModifiedDate.toString('u'));
+    formData.set('file.name', chunk.file.name);
+    formData.set('file.size', chunk.file.size.toString());
 
     return this.http.post<AppResponseModel>(Constants.URL.UPLOAD, formData, {
       reportProgress: true,
