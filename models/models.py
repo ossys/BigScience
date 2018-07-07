@@ -103,5 +103,6 @@ class FileChunk(models.Model):
     file_size = models.IntegerField()
 
 #     REQUIRED_FIELDS = ['chunk_sha256','chunk_id','chunk_startByte',
-#                        'chunk_endByte','file_sha256','file_lastModifiedDate',
-#                        'file_name','file_size','chunk_data']
+#                        'chunk_endByte','chunk_data',
+#                        'file_sha256','file_lastModifiedDate',
+#                        'file_name','file_size']
