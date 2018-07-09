@@ -4,7 +4,6 @@ from django.utils import timezone
 from django.contrib.auth.models import AbstractBaseUser
 from django.contrib.auth.models import PermissionsMixin
 from django.contrib.auth.models import BaseUserManager
-from pyexpat import model
 
 # Create your models here.
 class UserProfileManager(BaseUserManager):
@@ -92,13 +91,19 @@ class Response:
         }
 
 
+class File(models.Model):
+    sha256 = models.CharField(max_length=64, unique=True)
+    last_modified_date = models.DateTimeField(auto_now=False)
+    name = models.CharField(max_length=256)
+    size = models.IntegerField()
+    total_chunks = models.IntegerField()
+    chunks_written = models.IntegerField()
+
+
 class FileChunk(models.Model):
-    chunk_sha256 = models.CharField(max_length=64)
+    file = models.ForeignKey(File, on_delete=models.CASCADE)
+    sha256 = models.CharField(max_length=64, unique=True)
     chunk_id = models.IntegerField()
-    chunk_startByte = models.IntegerField()
-    chunk_endByte = models.IntegerField()
-    chunk_data = models.BinaryField()
-    file_sha256 = models.CharField(max_length=64)
-    file_lastModifiedDate = models.DateTimeField(auto_now=False)
-    file_name = models.CharField(max_length=256)
-    file_size = models.IntegerField()
+    start_byte = models.IntegerField()
+    end_byte = models.IntegerField()
+    data = models.BinaryField()

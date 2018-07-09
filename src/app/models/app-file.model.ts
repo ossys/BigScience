@@ -20,6 +20,7 @@ export class AppFileModel implements IDeserializable {
     private file: File;
     private _status: Status;
     private _sha256: string;
+    private _totalChunks: number;
 
     constructor() {
     }
@@ -43,6 +44,14 @@ export class AppFileModel implements IDeserializable {
 
     set sha256(sha256: string) {
         this._sha256 = sha256;
+    }
+
+    get totalChunks(): number {
+        return this._totalChunks;
+    }
+
+    set totalChunks(totalChunks: number) {
+        this._totalChunks = totalChunks;
     }
 
     get name(): string {

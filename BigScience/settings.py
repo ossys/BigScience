@@ -42,11 +42,11 @@ INSTALLED_APPS = [
     'rest_framework.authtoken',
     'corsheaders',
     'django_nose',
+    'hdfs',
     'models',
     'login',
     'register',
     'file',
-    'hdfs',
 ]
 
 MIDDLEWARE = [
@@ -155,6 +155,11 @@ CONSTANTS = {
         '1_0': '1.0'
     }
 }
+
+# Celery Task Management Configuration Settings
+CELERY_BROKER_URL='redis://localhost:6379/0'
+CELERY_RESULT_BACKEND='redis://localhost:6379/0'
+CELERY_IMPORTS=('file',)
 
 # Django Nose Test Runner Configuration
 TEST_RUNNER = 'django_nose.NoseTestSuiteRunner'

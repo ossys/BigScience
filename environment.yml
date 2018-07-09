@@ -12,6 +12,7 @@ dependencies:
   - hdfs3=0.3.0
   - redis-py=2.10.6
   - python-dateutil=2.7
+  - celery[redis]=4.1.1
   - pip:
     - djongo==1.2.23
     - djangorestframework-jwt==1.11.0
