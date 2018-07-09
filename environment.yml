@@ -8,8 +8,10 @@ dependencies:
   - django=2.0.6
   - djangorestframework=3.8.2
   - pyjwt=1.6.4
-  - libhdfs3
-  - hdfs3
+  - libhdfs3=2.3
+  - hdfs3=0.3.0
+  - redis-py=2.10.6
+  - python-dateutil=2.7
   - pip:
     - djongo==1.2.23
     - djangorestframework-jwt==1.11.0

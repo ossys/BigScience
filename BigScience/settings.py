@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     'login',
     'register',
     'file',
+    'hdfs',
 ]
 
 MIDDLEWARE = [

@@ -75,7 +75,7 @@ export class FileService {
                         size: processModel.file.size,
                         lastModified: processModel.file.lastModified,
                         lastModifiedDate: processModel.file.lastModifiedDate,
-                        chunks_uploading: Array.apply(null, { length: 10 }).map(Function.call, Number),
+                        chunks_uploading: Array.apply(null, { length: Constants.FILE.NUM_CHUNK_UPLOADS }).map(Function.call, Number),
                         total_chunks: Math.floor(processModel.file.size / Constants.FILE.CHUNK_SIZE_BYTES) + ((processModel.file.size / Constants.FILE.CHUNK_SIZE_BYTES) > 0 ? 1 : 0)
                     };
                     this.storageService.set(Constants.LOCAL_STORAGE.UPLOADS, JSON.stringify(uploads));

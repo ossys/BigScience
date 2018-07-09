@@ -73,7 +73,8 @@ const routes: Routes = [
     NgStringPipesModule
   ],
   providers: [
-    EndpointService
+    EndpointService,
+      StorageService
   ],
   bootstrap: [AppComponent]
 })

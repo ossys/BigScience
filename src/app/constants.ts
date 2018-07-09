@@ -11,6 +11,7 @@ export class Constants {
   };
   public static FILE = {
     CHUNK_SIZE_BYTES: 1048576,
-    ROUND_SIZE: 100
+    ROUND_SIZE: 100,
+    NUM_CHUNK_UPLOADS: 10
   };
 }

@@ -4,6 +4,7 @@ from django.utils import timezone
 from django.contrib.auth.models import AbstractBaseUser
 from django.contrib.auth.models import PermissionsMixin
 from django.contrib.auth.models import BaseUserManager
+from pyexpat import model
 
 # Create your models here.
 class UserProfileManager(BaseUserManager):
@@ -101,8 +102,3 @@ class FileChunk(models.Model):
     file_lastModifiedDate = models.DateTimeField(auto_now=False)
     file_name = models.CharField(max_length=256)
     file_size = models.IntegerField()
-
-#     REQUIRED_FIELDS = ['chunk_sha256','chunk_id','chunk_startByte',
-#                        'chunk_endByte','chunk_data',
-#                        'file_sha256','file_lastModifiedDate',
-#                        'file_name','file_size']
