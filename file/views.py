@@ -5,21 +5,35 @@ import dateutil.parser
 
 from models import models
 from hdfs import hdfs
-from .tasks import add
 
 # Create your views here.
+class Prepare(APIView):
+    permission_classes = ()
+
+    def post(self, request, *args, **kwargs):
+        file = models.File(
+        sha256 = request.data['sha256'],
+        last_modified_date = dateutil.parser.parse(request.data['last_modified_date']),
+        name = request.data['name'],
+        size = request.data['size'],
+        total_chunks = request.data['total_chunks'],
+        )
+        file.save()
+
+        return Response(
+          models.Response(success=True, data={}, message='Successfully Authenticated').dict(),
+          status=200,
+          content_type="application/json"
+        )
+
 class Upload(APIView):
     permission_classes = ()
 
     def post(self, request, *args, **kwargs):
         chunk = models.FileChunk(
-        file = models.File.objects.get_or_create(
+        file = models.File.objects.get(
         sha256 = request.data['file.sha256'],
-        last_modified_date = dateutil.parser.parse(request.data['file.lastModifiedDate']),
-        name = request.data['file.name'],
-        size = request.data['file.size'],
-        total_chunks = request.data['file.totalChunks'],
-        )[0],
+        ),
         sha256 = request.data['chunk.sha256'],
         chunk_id = request.data['chunk.id'],
         start_byte = request.data['chunk.startByte'],
@@ -29,7 +43,7 @@ class Upload(APIView):
         hdfs.writeChunk(request.user, chunk)
 
         return Response(
-          models.Response(success=False, message='Not Yet Implemented').dict(),
-          status=501,
+          models.Response(success=True, data={}, message='Successfully Uploaded').dict(),
+          status=200,
           content_type="application/json"
         )

@@ -31,7 +31,7 @@ export class DataUploadComponent implements OnInit {
     }
 
     upload(file) {
-        this.fileService.startUpload(file);
+        this.fileService.uploadFile(file);
     }
 
 }

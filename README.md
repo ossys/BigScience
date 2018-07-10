@@ -1,27 +1,26 @@
-# BigScience
+# Requirements
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 6.0.8.
+NodeJS / Angular
+``
 
-## Development server
+Anaconda
+``
 
-Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The app will automatically reload if you change any of the source files.
+# Install Dependencies
 
-## Code scaffolding
+Angular
+`npm install`
 
-Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.
+Django App
+`conda env create -f environment.yml`
 
-## Build
+# Start Services
 
-Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory. Use the `--prod` flag for a production build.
+Angular Front-End
+`ng serve`
 
-## Running unit tests
+Celery Worker
+`celery -A BigScience worker -l info`
 
-Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
-
-## Running end-to-end tests
-
-Run `ng e2e` to execute the end-to-end tests via [Protractor](http://www.protractortest.org/).
-
-## Further help
-
-To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI README](https://github.com/angular/angular-cli/blob/master/README.md).
+REST Server
+`python manage.py runserver`

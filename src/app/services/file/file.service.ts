@@ -34,7 +34,7 @@ export class FileService {
         processModel.endChunk = (processModel.totalChunks < Constants.FILE.ROUND_SIZE) ? processModel.totalChunks : (processModel.round < processModel.totalChunks - 1) ? ((processModel.round + 1) * Constants.FILE.ROUND_SIZE) : processModel.totalChunks;
 
         processModel.file.totalChunks = processModel.totalChunks;
-        
+
         console.log('PROCESSING FILE: ' + file.name + '(' + file.size + ' / ' + Constants.FILE.CHUNK_SIZE_BYTES + ')');
         console.log('NUM CHUNKS: ' + processModel.totalChunks);
         console.log('NUM ROUNDS: ' + processModel.totalRounds);
@@ -53,8 +53,8 @@ export class FileService {
                     processModel.status = AppFileProcessModel.Status.PROCESSING;
                     this.callRound(processModel);
                 } else {
-//                    console.log(processModel.percentage);
-//                    console.log(processModel.estTime);
+                    //                    console.log(processModel.percentage);
+                    //                    console.log(processModel.estTime);
                 }
             },
             complete: () => {
@@ -134,28 +134,34 @@ export class FileService {
         });
     }
 
-    startUpload(file: AppFileModel) {
-        let uploads: any = JSON.parse(this.storageService.get(Constants.LOCAL_STORAGE.UPLOADS));
-        console.log('GETTING FILE HASH: ' + file.sha256);
-        for (let chunk_id = 0; chunk_id < uploads[file.sha256].chunks_uploading.length; chunk_id++) {
-            file.getChunk(uploads[file.sha256].chunks_uploading[chunk_id]).subscribe({
-                next: (chunk: AppFileChunkModel) => {
-                    if (chunk.event.type == "progress") {
-                    } else if (chunk.event.type == "loadend" && chunk.event.target.readyState == FileReader.DONE) {
-                        let sha256 = new fastsha256.Hash();
-                        sha256.update(new Uint8Array(chunk.event.target.result));
-                        chunk.sha256 = new Buffer(sha256.digest()).toString('hex');
-                        console.log('CHUNK HASH: ' + chunk.sha256);
-                        this.endpointService.dataUpload(chunk).subscribe(result => {
-                            if (result.success) {
-                            }
-                        });
-                    }
-                },
-                error: (chunk: AppFileChunkModel) => { console.log('ERROR'); console.log(event); },
-                complete: () => { console.log('COMPLETE CHUNK READ'); }
-            });
-        }
+    uploadFile(file: AppFileModel) {
+        this.endpointService.filePrepare(file).subscribe(result => {
+            if (result.success) {
+                for (let chunk_id = 0; chunk_id < 10; chunk_id++) {
+                    this.uploadChunk(chunk_id, file);
+                }
+            }
+        });
+    }
+
+    uploadChunk(chunk_id: number, file: AppFileModel) {
+        file.getChunk(chunk_id).subscribe({
+            next: (chunk: AppFileChunkModel) => {
+                if (chunk.event.type == "progress") {
+                } else if (chunk.event.type == "loadend" && chunk.event.target.readyState == FileReader.DONE) {
+                    let sha256 = new fastsha256.Hash();
+                    sha256.update(new Uint8Array(chunk.event.target.result));
+                    chunk.sha256 = new Buffer(sha256.digest()).toString('hex');
+                    console.log('UPLOAD CHUNK (' + chunk.id + '): ' + chunk.sha256);
+                    this.endpointService.dataUpload(chunk).subscribe(result => {
+                        if (result.success) {
+                        }
+                    });
+                }
+            },
+            error: (chunk: AppFileChunkModel) => { console.log('ERROR'); console.log(event); },
+            complete: () => { console.log('COMPLETE CHUNK READ'); }
+        });
     }
 
     pauseUpload(file: AppFileModel) {

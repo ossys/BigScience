@@ -157,9 +157,8 @@ CONSTANTS = {
 }
 
 # Celery Task Management Configuration Settings
-CELERY_BROKER_URL='redis://localhost:6379/0'
+CELERY_BROKER_URL='amqp://localhost'
 CELERY_RESULT_BACKEND='redis://localhost:6379/0'
-CELERY_IMPORTS=('file',)
 
 # Django Nose Test Runner Configuration
 TEST_RUNNER = 'django_nose.NoseTestSuiteRunner'

@@ -8,6 +8,7 @@ import { Constants } from '../../constants';
 import { AppResponseModel } from '../../models/app-response.model';
 import { LoginModel } from '../../models/login.model';
 import { RegistrationModel } from '../../models/registration.model';
+import { AppFileModel } from '../../models/app-file.model';
 import { AppFileChunkModel } from '../../models/app-file-chunk.model';
 
 @Injectable({
@@ -37,20 +38,29 @@ export class EndpointService {
     });
   }
 
+  filePrepare(file: AppFileModel): Observable<AppResponseModel> {
+    return this.http.post<AppResponseModel>(Constants.URL.FILE_PREPARE, {
+        sha256: file.sha256,
+        last_modified_date: file.lastModifiedDate.toString('u'),
+        name: file.name,
+        size: file.size,
+        total_chunks: file.totalChunks
+    }, {
+      reportProgress: true,
+      headers: new HttpHeaders().set('Content-Type', 'application/json').set('Accept', 'application/json; version=' + Constants.API_VERSION)
+    });
+  }
+
   dataUpload(chunk: AppFileChunkModel): Observable<AppResponseModel> {
     const formData: FormData = new FormData();
     formData.set('file.sha256', chunk.file.sha256);
-    formData.set('file.lastModifiedDate', chunk.file.lastModifiedDate.toString('u'));
-    formData.set('file.name', chunk.file.name);
-    formData.set('file.size', chunk.file.size.toString());
-    formData.set('file.totalChunks', chunk.file.totalChunks);
     formData.set('chunk.sha256', chunk.sha256);
     formData.set('chunk.id', chunk.id.toString());
     formData.set('chunk.startByte', chunk.startByte.toString());
     formData.set('chunk.endByte', chunk.endByte.toString());
     formData.set('chunk.data', new Blob([new Uint8Array(chunk.event.target.result)]));
 
-    return this.http.post<AppResponseModel>(Constants.URL.UPLOAD, formData, {
+    return this.http.post<AppResponseModel>(Constants.URL.CHUNK_UPLOAD, formData, {
       reportProgress: true,
       headers: new HttpHeaders().set('Accept', 'application/json; version=' + Constants.API_VERSION)
     });
