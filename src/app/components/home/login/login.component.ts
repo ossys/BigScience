@@ -1,7 +1,11 @@
 import { Component, OnInit, AfterViewInit } from '@angular/core';
 import { Router } from '@angular/router';
 
+import { Constants } from '../../../constants';
+
 import { EndpointService } from '../../../services/endpoint/endpoint.service';
+import { StorageService } from '../../../services/storage/storage.service';
+
 import { LoginModel } from '../../../models/login.model';
 
 @Component({
@@ -13,7 +17,9 @@ export class LoginComponent implements OnInit {
 
   userLogin: LoginModel = new LoginModel();
 
-  constructor(private router: Router, private endpointService: EndpointService) { }
+  constructor(private router: Router,
+              private endpointService: EndpointService,
+              private storageService: StorageService) { }
 
   ngOnInit() {
   }
@@ -30,7 +36,8 @@ export class LoginComponent implements OnInit {
 
   login() {
     this.endpointService.login(this.userLogin).subscribe(result => {
-      if(result.success) {
+      if (result.success) {
+        this.storageService.set(Constants.LOCAL_STORAGE.JWT, result.data.jwt);
         this.router.navigate(['dashboard']);
       }
     });

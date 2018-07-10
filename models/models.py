@@ -37,6 +37,9 @@ class UserProfileManager(BaseUserManager):
         user.save(using=self._db)
         
         return user
+    
+    def get_by_natural_key(self, username):
+        return self.get(username=username)
 
 
 class UserProfile(AbstractBaseUser, PermissionsMixin):
@@ -92,6 +95,7 @@ class Response:
 
 
 class File(models.Model):
+    user = models.ForeignKey(UserProfile, on_delete=models.CASCADE)
     sha256 = models.CharField(max_length=64, unique=True)
     last_modified_date = models.DateTimeField(auto_now=False)
     name = models.CharField(max_length=256)

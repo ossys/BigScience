@@ -31,7 +31,9 @@ export class FileService {
         processModel.totalChunks = Math.ceil(file.size / Constants.FILE.CHUNK_SIZE_BYTES);
         processModel.totalRounds = Math.ceil(processModel.totalChunks / Constants.FILE.ROUND_SIZE);
         processModel.startChunk = processModel.round * Constants.FILE.ROUND_SIZE;
-        processModel.endChunk = (processModel.totalChunks < Constants.FILE.ROUND_SIZE) ? processModel.totalChunks : (processModel.round < processModel.totalChunks - 1) ? ((processModel.round + 1) * Constants.FILE.ROUND_SIZE) : processModel.totalChunks;
+        processModel.endChunk = (processModel.totalChunks < Constants.FILE.ROUND_SIZE) ?
+                                processModel.totalChunks : (processModel.round < processModel.totalChunks - 1) ?
+                                ((processModel.round + 1) * Constants.FILE.ROUND_SIZE) : processModel.totalChunks;
 
         processModel.file.totalChunks = processModel.totalChunks;
 
@@ -49,7 +51,9 @@ export class FileService {
                 if (processModel.status == AppFileProcessModel.Status.COMPLETE) {
                     processModel.round++;
                     processModel.startChunk = processModel.round * Constants.FILE.ROUND_SIZE;
-                    processModel.endChunk = (processModel.totalChunks < Constants.FILE.ROUND_SIZE) ? processModel.totalChunks : (processModel.round < processModel.totalChunks - 1) ? ((processModel.round + 1) * Constants.FILE.ROUND_SIZE) : processModel.totalChunks;
+                    processModel.endChunk = (processModel.totalChunks < Constants.FILE.ROUND_SIZE) ?
+                    processModel.totalChunks : (processModel.round < processModel.totalChunks - 1) ?
+                    ((processModel.round + 1) * Constants.FILE.ROUND_SIZE) : processModel.totalChunks;
                     processModel.status = AppFileProcessModel.Status.PROCESSING;
                     this.callRound(processModel);
                 } else {
@@ -78,7 +82,8 @@ export class FileService {
                         lastModified: processModel.file.lastModified,
                         lastModifiedDate: processModel.file.lastModifiedDate,
                         chunks_uploading: Array.apply(null, { length: Constants.FILE.NUM_CHUNK_UPLOADS }).map(Function.call, Number),
-                        total_chunks: Math.floor(processModel.file.size / Constants.FILE.CHUNK_SIZE_BYTES) + ((processModel.file.size / Constants.FILE.CHUNK_SIZE_BYTES) > 0 ? 1 : 0)
+                        total_chunks: Math.floor(processModel.file.size / Constants.FILE.CHUNK_SIZE_BYTES) +
+                        ((processModel.file.size / Constants.FILE.CHUNK_SIZE_BYTES) > 0 ? 1 : 0)
                     };
                     this.storageService.set(Constants.LOCAL_STORAGE.UPLOADS, JSON.stringify(uploads));
                 }
@@ -113,7 +118,8 @@ export class FileService {
                         processModel.percentage = (processModel.totalBytes / processModel.file.size) * 100;
 
                         // Est Time Remaining
-                        processModel.avgBytesPerSec = ((Constants.FILE.CHUNK_SIZE_BYTES / this.timerService.getTime()) + processModel.avgBytesPerSec) / 2;
+                        processModel.avgBytesPerSec = ((Constants.FILE.CHUNK_SIZE_BYTES / this.timerService.getTime()) +
+                                                        processModel.avgBytesPerSec) / 2;
                         processModel.estTime = ((processModel.file.size - processModel.totalBytes) / processModel.avgBytesPerSec) / 1000;
                         this.timerService.clear();
 

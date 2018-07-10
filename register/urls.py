@@ -9,6 +9,5 @@ router = DefaultRouter(trailing_slash=False)
 router.register('userprofile', views.UserProfileViewSet)
 
 urlpatterns = [
-#     path('register', views.Login.as_view()),
     path('', include(router.urls))
 ]

@@ -1,7 +1,7 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { HttpClientModule } from '@angular/common/http';
+import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { Routes, RouterModule } from '@angular/router';
 
 /* Libraries */
@@ -10,6 +10,9 @@ import { NgMathPipesModule, NgStringPipesModule } from 'angular-pipes';
 /* Services */
 import { EndpointService } from './services/endpoint/endpoint.service';
 import { StorageService } from './services/storage/storage.service';
+
+/* Interceptors */
+import { JwtInterceptor } from './interceptors/jwt.interceptor';
 
 /* Home Components */
 import { AppComponent } from './app.component';
@@ -74,7 +77,12 @@ const routes: Routes = [
   ],
   providers: [
     EndpointService,
-      StorageService
+    StorageService,
+    {
+      provide: HTTP_INTERCEPTORS,
+      useClass: JwtInterceptor,
+      multi: true
+    }
   ],
   bootstrap: [AppComponent]
 })

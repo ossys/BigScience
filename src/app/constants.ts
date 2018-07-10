@@ -8,7 +8,8 @@ export class Constants {
     CHUNK_UPLOAD: Constants.HOST + '/api/chunk/upload'
   };
   public static LOCAL_STORAGE = {
-    UPLOADS: 'uploads'
+    UPLOADS: 'uploads',
+    JWT: 'JWT'
   };
   public static FILE = {
     CHUNK_SIZE_BYTES: 1048576,

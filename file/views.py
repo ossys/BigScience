@@ -8,9 +8,8 @@ from hdfs import hdfs
 
 # Create your views here.
 class Prepare(APIView):
-    permission_classes = ()
-
     def post(self, request, *args, **kwargs):
+        print(request.user)
         file = models.File(
         sha256 = request.data['sha256'],
         last_modified_date = dateutil.parser.parse(request.data['last_modified_date']),
@@ -27,8 +26,6 @@ class Prepare(APIView):
         )
 
 class Upload(APIView):
-    permission_classes = ()
-
     def post(self, request, *args, **kwargs):
         chunk = models.FileChunk(
         file = models.File.objects.get(
