@@ -3,43 +3,45 @@ from datetime import datetime, timedelta
 from django.db import models
 from django.conf import settings
 
-from django.contrib.auth.models import AbstractBaseUser
-from django.contrib.auth.models import PermissionsMixin
-from django.contrib.auth.models import BaseUserManager
+from django.contrib.auth.models import (
+    AbstractBaseUser, PermissionsMixin, BaseUserManager
+)
 
 import jwt
 
 # Create your models here.
 class UserManager(BaseUserManager):
     """Helps Django work with our custom user model."""
-    
+
     def create_user(self, username, email, password, **extra_fields):
         """Create a new user."""
-
-        if not username:
-            raise ValueError('The username is required.')
 
         if not email:
             raise ValueError('The email is required.')
 
-        email = self.normalize_email(email)
-        user = self.model(username=username, email=email, **extra_fields)
-        
+        if not password:
+            raise ValueError('The password is required.')
+
+        if not username:
+            raise ValueError('The username is required.')
+
+        user = self.model(username=username, email=self.normalize_email(email), **extra_fields)
         user.set_password(password)
-        user.save(using=self._db)
+        user.save()
 
         return user
 
     def create_superuser(self, username, email, password, **extra_fields):
         """ Create and save a new superuser """
+
+        if not password:
+            raise ValueError('The password is required.')
         
         user = self.create_user(username, email, password, **extra_fields);
-        
         user.is_superuser = True
         user.is_staff = True
-        
         user.save(using=self._db)
-        
+
         return user
 
 
@@ -55,26 +57,20 @@ class User(AbstractBaseUser, PermissionsMixin):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
+    # Tells Django that the UserManager class defined above should manage
+    # objects of this type.
     objects = UserManager()
 
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['username']
 
-#     def save(self, *args, **kwargs):
-#         """ On save, update timestamps """
-#         # If the record does not currently exist in the database
-#         self.created_date = timezone.now()
-#         self.updated_date = timezone.now()
-# 
-#         return super(UserProfile, self).save(*args, **kwargs)
+    def __str__(self):
+        """Convert the object to a string"""
+        return self.email
 
     def get_full_name(self):
         """ Get a user's full name """
         return self.first_name + " " + self.last_name
-
-    def __str__(self):
-        """Convert the object to a string"""
-        return self.email
 
     @property
     def token(self):
@@ -93,7 +89,6 @@ class User(AbstractBaseUser, PermissionsMixin):
         date set to 60 days into the future.
         """
         dt = datetime.now() + timedelta(days=settings.JWT_DAYS_TO_EXPIRATION)
-
         token = jwt.encode({
             'id': self.pk,
             'exp': int(dt.strftime('%s'))
@@ -102,7 +97,7 @@ class User(AbstractBaseUser, PermissionsMixin):
         return token.decode('utf-8')
 
 
-class Response:
+class JSONResponse:
     success = False
     data = {}
     message = ''

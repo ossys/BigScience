@@ -10,6 +10,8 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/2.0/ref/settings/
 """
 
+# https://thinkster.io/tutorials/django-json-api
+
 import os
 from django.conf.global_settings import AUTH_USER_MODEL
 
@@ -42,10 +44,11 @@ INSTALLED_APPS = [
     'rest_framework.authtoken',
     'corsheaders',
     'django_nose',
-    'hdfs',
+    'exceptions',
     'models',
     'user',
     'file',
+    'hdfs',
 ]
 
 MIDDLEWARE = [
@@ -86,18 +89,14 @@ REST_FRAMEWORK = {
         'rest_framework.permissions.IsAuthenticated',
     ),
     'DEFAULT_AUTHENTICATION_CLASSES': (
-        'rest_framework_jwt.authentication.JSONWebTokenAuthentication',
-    )
+        'authentication.jwt_authentication.JWTAuthentication',
+    ),
+    'EXCEPTION_HANDLER': 'exceptions.exception.core_exception_handler',
+    'NON_FIELD_ERRORS_KEY': 'error',
 }
 
 # JWT
 JWT_DAYS_TO_EXPIRATION=30
-JWT_AUTH = {
-    'JWT_SECRET_KEY': SECRET_KEY,
-    'JWT_ALGORITHM': 'HS256',
-    'JWT_AUTH_HEADER_PREFIX': 'JWT',
-    'JWT_AUTH_COOKIE': None,
-}
 
 # Database
 # https://docs.djangoproject.com/en/2.0/ref/settings/#databases
@@ -172,5 +171,5 @@ CELERY_RESULT_BACKEND='redis://localhost:6379/0'
 TEST_RUNNER = 'django_nose.NoseTestSuiteRunner'
 NOSE_ARGS = [
     '--with-coverage',
-    '--cover-package=models,user,file',
+    '--cover-package=exceptions,models,user,file,hdfs',
 ]
