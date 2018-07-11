@@ -9,8 +9,8 @@ from hdfs import hdfs
 # Create your views here.
 class Prepare(APIView):
     def post(self, request, *args, **kwargs):
-        print(request.user)
         file = models.File(
+        user = request.user,
         sha256 = request.data['sha256'],
         last_modified_date = dateutil.parser.parse(request.data['last_modified_date']),
         name = request.data['name'],

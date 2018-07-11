@@ -36,8 +36,6 @@ class JWTAuthentication(authentication.BaseAuthentication):
         # the authentication header (in this case, "Token") and 2) the JWT 
         # that we should authenticate against.
         auth_header = authentication.get_authorization_header(request).split()
-        print('>>>>> AUTH HEADER >>>>>>')
-        print(auth_header)
         auth_header_prefix = self.authentication_header_prefix.lower()
 
         if not auth_header:
