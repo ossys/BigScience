@@ -8,7 +8,7 @@ from . import views
 router = DefaultRouter(trailing_slash=False)
 
 urlpatterns = [
-#     path('user', views.UserCreateView.as_view()),
+    path('user', views.RegistrationAPIView.as_view()),
     path('login', views.LoginAPIView.as_view()),
 #     path('user', views.UserUpdateView.as_view()),
 ]

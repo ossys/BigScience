@@ -1,43 +1,41 @@
 from django.contrib.auth import authenticate
 from django.conf import settings
 
-from rest_framework import status
-from rest_framework.generics import RetrieveUpdateAPIView
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from rest_framework.permissions import AllowAny, IsAuthenticated
+from rest_framework.permissions import AllowAny
 
 from models import models
-from .serializers import LoginSerializer
+from .serializers import (RegistrationSerializer, LoginSerializer)
 from .renderers import UserJSONRenderer
 
 # Create your views here.
 
-# class UserCreateView(APIView):
-#     """Handles creating and updating UserProfile"""
-#     permission_classes = (AllowAny,)
-#     serializer_class = UserSerializer
-# 
-#     def post(self, request):
-#         print(request.data)
-# 
-#         if not self.request.version or self.request.version == settings.CONSTANTS['VERSION']['1_0']:
-#             serializer = self.serializer_class(data=request.data)
-#             serializer.is_valid(raise_exception=True)
-#             serializer.save()
-# 
-#             return Response(
-#               models.Response(success=True, data=serializer.data, message='Successfully Created User').dict(),
-#               status=200,
-#               content_type="application/json"
-#             )
-#             
-#         else:
-#             return Response(
-#               models.Response(success=False, message='Unsupported API version number provided: ' + self.request.version).dict(),
-#               status=400,
-#               content_type="application/json"
-#             )
+class RegistrationAPIView(APIView):
+    """Handles creating and updating UserProfile"""
+    permission_classes = (AllowAny,)
+    serializer_class = RegistrationSerializer
+ 
+    def post(self, request):
+        print(request.data)
+ 
+        if not self.request.version or self.request.version == settings.CONSTANTS['VERSION']['1_0']:
+            serializer = self.serializer_class(data=request.data)
+            serializer.is_valid(raise_exception=True)
+            serializer.save()
+ 
+            return Response(
+              models.JSONResponse(success=True, data=serializer.data, message='Successfully Created User').dict(),
+              status=200,
+              content_type="application/json"
+            )
+             
+        else:
+            return Response(
+              models.JSONResponse(success=False, message='Unsupported API version number provided: ' + self.request.version).dict(),
+              status=400,
+              content_type="application/json"
+            )
 
 class LoginAPIView(APIView):
     permission_classes = (AllowAny,)
