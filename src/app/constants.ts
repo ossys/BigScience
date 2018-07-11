@@ -3,7 +3,7 @@ export class Constants {
   public static API_VERSION = '1.0';
   public static URL = {
     LOGIN: Constants.HOST + '/api/login',
-    REGISTER: Constants.HOST + '/api/userprofile',
+    REGISTER: Constants.HOST + '/api/user',
     FILE_PREPARE: Constants.HOST + '/api/file/prepare',
     CHUNK_UPLOAD: Constants.HOST + '/api/chunk/upload'
   };

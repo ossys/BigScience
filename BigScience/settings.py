@@ -44,8 +44,7 @@ INSTALLED_APPS = [
     'django_nose',
     'hdfs',
     'models',
-    'login',
-    'register',
+    'user',
     'file',
 ]
 
@@ -92,6 +91,7 @@ REST_FRAMEWORK = {
 }
 
 # JWT
+JWT_DAYS_TO_EXPIRATION=30
 JWT_AUTH = {
     'JWT_SECRET_KEY': SECRET_KEY,
     'JWT_ALGORITHM': 'HS256',
@@ -147,7 +147,7 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
-AUTH_USER_MODEL = 'models.UserProfile'
+AUTH_USER_MODEL = 'models.User'
 
 APPEND_SLASH = False
 
@@ -172,5 +172,5 @@ CELERY_RESULT_BACKEND='redis://localhost:6379/0'
 TEST_RUNNER = 'django_nose.NoseTestSuiteRunner'
 NOSE_ARGS = [
     '--with-coverage',
-    '--cover-package=models,login,register,file',
+    '--cover-package=models,user,file',
 ]

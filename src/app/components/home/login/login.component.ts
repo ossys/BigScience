@@ -37,7 +37,7 @@ export class LoginComponent implements OnInit {
   login() {
     this.endpointService.login(this.userLogin).subscribe(result => {
       if (result.success) {
-        this.storageService.set(Constants.LOCAL_STORAGE.JWT, result.data.jwt);
+        this.storageService.set(Constants.LOCAL_STORAGE.JWT, result.data.token);
         this.router.navigate(['dashboard']);
       }
     });

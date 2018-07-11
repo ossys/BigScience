@@ -1,12 +1,16 @@
+from datetime import datetime, timedelta
+
 from django.db import models
-from django.utils import timezone
+from django.conf import settings
 
 from django.contrib.auth.models import AbstractBaseUser
 from django.contrib.auth.models import PermissionsMixin
 from django.contrib.auth.models import BaseUserManager
 
+import jwt
+
 # Create your models here.
-class UserProfileManager(BaseUserManager):
+class UserManager(BaseUserManager):
     """Helps Django work with our custom user model."""
     
     def create_user(self, username, email, password, **extra_fields):
@@ -37,35 +41,32 @@ class UserProfileManager(BaseUserManager):
         user.save(using=self._db)
         
         return user
-    
-    def get_by_natural_key(self, username):
-        return self.get(username=username)
 
 
-class UserProfile(AbstractBaseUser, PermissionsMixin):
+class User(AbstractBaseUser, PermissionsMixin):
     """Represents a User."""
 
-    username = models.CharField(max_length=50, unique=True)
-    email = models.EmailField(max_length=255, unique=True)
+    username = models.CharField(db_index=True, max_length=50, unique=True)
+    email = models.EmailField(db_index=True, max_length=255, unique=True)
     first_name = models.CharField(max_length=255)
     last_name = models.CharField(max_length=255)
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
-    created_date = models.DateTimeField(default=None, null=True)
-    updated_date = models.DateTimeField(default=None, null=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
 
-    objects = UserProfileManager()
+    objects = UserManager()
 
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['username']
 
-    def save(self, *args, **kwargs):
-        """ On save, update timestamps """
-        # If the record does not currently exist in the database
-        self.created_date = timezone.now()
-        self.updated_date = timezone.now()
-
-        return super(UserProfile, self).save(*args, **kwargs)
+#     def save(self, *args, **kwargs):
+#         """ On save, update timestamps """
+#         # If the record does not currently exist in the database
+#         self.created_date = timezone.now()
+#         self.updated_date = timezone.now()
+# 
+#         return super(UserProfile, self).save(*args, **kwargs)
 
     def get_full_name(self):
         """ Get a user's full name """
@@ -74,6 +75,31 @@ class UserProfile(AbstractBaseUser, PermissionsMixin):
     def __str__(self):
         """Convert the object to a string"""
         return self.email
+
+    @property
+    def token(self):
+        """
+        Allows us to get a user's token by calling `user.token` instead of
+        `user.generate_jwt_token().
+
+        The `@property` decorator above makes this possible. `token` is called
+        a "dynamic property".
+        """
+        return self._generate_jwt_token()
+
+    def _generate_jwt_token(self):
+        """
+        Generates a JSON Web Token that stores this user's ID and has an expiry
+        date set to 60 days into the future.
+        """
+        dt = datetime.now() + timedelta(days=settings.JWT_DAYS_TO_EXPIRATION)
+
+        token = jwt.encode({
+            'id': self.pk,
+            'exp': int(dt.strftime('%s'))
+        }, settings.SECRET_KEY, algorithm='HS256')
+
+        return token.decode('utf-8')
 
 
 class Response:
@@ -95,7 +121,7 @@ class Response:
 
 
 class File(models.Model):
-    user = models.ForeignKey(UserProfile, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
     sha256 = models.CharField(max_length=64, unique=True)
     last_modified_date = models.DateTimeField(auto_now=False)
     name = models.CharField(max_length=256)
