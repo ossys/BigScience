@@ -20,7 +20,7 @@ class Prepare(APIView):
         file.save()
 
         return Response(
-          models.Response(success=True, data={}, message='Successfully Authenticated').dict(),
+          models.JSONResponse(success=True, data={}, message='Successfully Authenticated').dict(),
           status=200,
           content_type="application/json"
         )
@@ -40,7 +40,7 @@ class Upload(APIView):
         hdfs.writeChunk(request.user, chunk)
 
         return Response(
-          models.Response(success=True, data={}, message='Successfully Uploaded').dict(),
+          models.JSONResponse(success=True, data={}, message='Successfully Uploaded').dict(),
           status=200,
           content_type="application/json"
         )

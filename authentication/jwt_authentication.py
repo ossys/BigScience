@@ -7,7 +7,7 @@ from rest_framework import authentication, exceptions
 from models import models
 
 class JWTAuthentication(authentication.BaseAuthentication):
-    authentication_header_prefix = 'Token'
+    authentication_header_prefix = 'JWT'
 
     def authenticate(self, request):
         """

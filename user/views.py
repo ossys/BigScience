@@ -17,8 +17,6 @@ class RegistrationAPIView(APIView):
     serializer_class = RegistrationSerializer
  
     def post(self, request):
-        print(request.data)
- 
         if not self.request.version or self.request.version == settings.CONSTANTS['VERSION']['1_0']:
             serializer = self.serializer_class(data=request.data)
             serializer.is_valid(raise_exception=True)
