@@ -20,24 +20,29 @@
                 <h3>Processing Files</h3>
                 <div *ngFor="let file of processingFiles">
                   <div class="appFile">
-                    <div class="appFileTitle clearfix align-middle">
-                        {{ file.name | truncate: 32: '...': false }} 
-                        ({{ file.size | bytes }})
+                    <div class="appFileTitle align-middle clearfix">
+                        <span class="pull-left">{{ file.name | truncate: 64: '...': false }} ({{ file.size | bytes }})</span>
                         <button class="btn btn-danger btn-fill pull-right"><i class="pe-7s-close-circle"></i></button>
-                        <button class="btn btn-primary btn-fill btn-wd pull-right" (click)="upload(file)">Upload</button>
+                        <button class="btn btn-primary btn-fill btn-wd pull-right" (click)="upload(file)" [disabled]="file.status != appFileModel.Status.VALID">
+                            {{ file.status == appFileModel.Status.VALID ? 'Upload File' : 'Processing...' }}
+                        </button>
                     </div>
                     <div class="appFileBody">
-                        
-
-                        <!-- Progress Bar -->
-                        <div class="progress">
-                            <div class="progress-bar" role="progressbar"
-                                aria-valuenow="0" aria-valuemin="0"
-                                aria-valuemax="100" [style.width]="file.processedPercent+'%'">
-                                <span class="sr-only">{{ file.processedPercent | number : '1.2-2' }}%</span>
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div>Processed: x / {{ file.size | bytes }}</div>
+                                <div>Remaining: {{ file.processedEstTime | minutes }}</div>
+                            </div>
+                            <div class="col-md-8">
+                                <!-- Progress Bar -->
+                                <div class="progress">
+                                    <div class="progress-bar progress-bar-striped active" role="progressbar"
+                                    aria-valuenow="40" aria-valuemin="0" aria-valuemax="100" [style.width]="file.processedPercent+'%'">
+                                    {{ file.processedPercent | number : '1.2-2' }}% Complete
+                                    </div>
+                                </div>
                             </div>
                         </div>
-                        <span>Time Remaining: {{ file.processedEstTime | minutes }}</span>
                     </div>
                   </div>
                 </div>

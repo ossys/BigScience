@@ -23,6 +23,7 @@ export class DataUploadComponent implements OnInit {
 
     processingFiles: AppFileModel[] = [];
     uploadingFiles: AppFileModel[] = [];
+    appFileModel = AppFileModel;
 
     constructor(private endpointService: EndpointService,
                 private timerService: TimerService) { }
@@ -47,6 +48,7 @@ export class DataUploadComponent implements OnInit {
 
     processFile(file: AppFileModel) {
         const processModel: AppFileProcessModel = new AppFileProcessModel();
+        file.status = AppFileModel.Status.PROCESSING;
         processModel.file = file;
         processModel.sha256 = new fastsha256.Hash();
         processModel.totalChunks = Math.ceil(file.size / Constants.FILE.CHUNK_SIZE_BYTES);
@@ -85,6 +87,7 @@ export class DataUploadComponent implements OnInit {
             complete: () => {
                 processModel.file.sha256 = new Buffer(processModel.sha256.digest()).toString('hex');
                 processModel.file.lastUploadId = 0;
+                processModel.file.status = AppFileModel.Status.VALID;
                 console.log('FILE COMPLETE: ' + processModel.file.sha256);
             }
         });
@@ -105,10 +108,10 @@ export class DataUploadComponent implements OnInit {
             chain.subscribe({
                 error: (chunk: AppFileChunkModel) => { console.log('ERROR'); },
                 next: (chunk: AppFileChunkModel) => {
-                    if (chunk.event.type === "loadstart") {
+                    if (chunk.event.type === 'loadstart') {
                         this.timerService.start();
-                    } else if (chunk.event.type === "progress") {
-                    } else if (chunk.event.type === "loadend" && chunk.event.target.readyState === FileReader.DONE) {
+                    } else if (chunk.event.type === 'progress') {
+                    } else if (chunk.event.type === 'loadend' && chunk.event.target.readyState === FileReader.DONE) {
                         processModel.sha256.update(new Uint8Array(chunk.event.target.result));
                         this.timerService.stop();
 
