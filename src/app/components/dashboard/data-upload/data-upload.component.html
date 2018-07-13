@@ -15,19 +15,38 @@
               <i class="pe-7s-download"></i>
             </div>
 
-            <!-- Progress Bar -->
-            <div class="progress">
-                <div class="progress-bar" role="progressbar"
-                    aria-valuenow="60" aria-valuemin="0"
-                    aria-valuemax="100" style="width: 60%;">
-                    <span class="sr-only">60% Complete</span>
+            <!-- Upload Finished -->
+            <div class="js-upload-finished">
+                <h3>Processing Files</h3>
+                <div *ngFor="let file of processingFiles">
+                  <div class="appFile">
+                    <div class="appFileTitle clearfix align-middle">
+                        {{ file.name | truncate: 32: '...': false }} 
+                        ({{ file.size | bytes }})
+                        <button class="btn btn-danger btn-fill pull-right"><i class="pe-7s-close-circle"></i></button>
+                        <button class="btn btn-primary btn-fill btn-wd pull-right" (click)="upload(file)">Upload</button>
+                    </div>
+                    <div class="appFileBody">
+                        
+
+                        <!-- Progress Bar -->
+                        <div class="progress">
+                            <div class="progress-bar" role="progressbar"
+                                aria-valuenow="0" aria-valuemin="0"
+                                aria-valuemax="100" [style.width]="file.processedPercent+'%'">
+                                <span class="sr-only">{{ file.processedPercent | number : '1.2-2' }}%</span>
+                            </div>
+                        </div>
+                        <span>Time Remaining: {{ file.processedEstTime | minutes }}</span>
+                    </div>
+                  </div>
                 </div>
             </div>
 
-            <!-- Upload Finished -->
+            <!-- Uploading Files -->
             <div class="js-upload-finished">
-                <h3>Selected Files</h3>
-                <div *ngFor="let file of files">
+                <h3>Uploads</h3>
+                <div *ngFor="let file of uploadingFiles">
                   <div class="appFile">
                     <div class="appFileTitle clearfix align-middle">
                         {{ file.name | truncate: 32: '...': false }} 

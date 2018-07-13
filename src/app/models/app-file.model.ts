@@ -1,7 +1,7 @@
 import { Observable } from 'rxjs/Observable';
 import { Observer } from 'rxjs/Observer';
 
-import { IDeserializable } from '../interfaces/deserializable';
+import { IDeserializable } from '../interfaces/deserializable.interface';
 
 import { Constants } from '../constants';
 import { AppFileChunkModel } from './app-file-chunk.model';
@@ -21,6 +21,12 @@ export class AppFileModel implements IDeserializable {
     private _status: Status;
     private _sha256: string;
     private _totalChunks: number;
+    private _lastUploadId: number;
+    private _uploads: Array<number>;
+    private _processedPercent = 0;
+    private _processedEstTime = 0;
+    private _uploadPercent = 0;
+    private _uploadEstTime = 0;
 
     constructor() {
     }
@@ -54,6 +60,38 @@ export class AppFileModel implements IDeserializable {
         this._totalChunks = totalChunks;
     }
 
+    get processedPercent(): number {
+        return this._processedPercent;
+    }
+
+    set processedPercent(processedPercent: number) {
+        this._processedPercent = processedPercent;
+    }
+
+    get processedEstTime(): number {
+        return this._processedEstTime;
+    }
+
+    set processedEstTime(processedEstTime: number) {
+        this._processedEstTime = processedEstTime;
+    }
+
+    get uploadPercent(): number {
+        return this._uploadPercent;
+    }
+
+    set uploadPercent(uploadPercent: number) {
+        this._uploadPercent = uploadPercent;
+    }
+
+    get uploadEstTime(): number {
+        return this._uploadEstTime;
+    }
+
+    set uploadEstTime(uploadEstTime: number) {
+        this._uploadEstTime = uploadEstTime;
+    }
+
     get name(): string {
         return this.file.name;
     }
@@ -74,40 +112,43 @@ export class AppFileModel implements IDeserializable {
         return this.file.lastModifiedDate;
     }
 
-    test(id: number): Observable<number> {
-        return new Observable<number>((observer: Observer<number>) => {
-            setTimeout(() => {
-                observer.next(id);
-                observer.complete();
-            }, Math.round(Math.random() * (300 - 500)) + 500);
-            return { unsubscribe() { console.log('UNSUB TEST'); } }
-        });
+    get lastUploadId(): number {
+        return this._lastUploadId;
+    }
+
+    set lastUploadId(lastUploadId: number) {
+        this._uploads = new Array<number>();
+        for (let i = lastUploadId; i < Constants.FILE.NUM_SIMULTANEOUS_UPLOADS; i++) {
+            this._uploads.push(i);
+        }
+        this._lastUploadId = lastUploadId;
     }
 
     getChunk(chunk_id: number): Observable<AppFileChunkModel> {
         return new Observable<AppFileChunkModel>((observer: Observer<AppFileChunkModel>) => {
-            let chunk = new AppFileChunkModel();
+            const chunk = new AppFileChunkModel();
             chunk.file = this;
             chunk.id = chunk_id;
             chunk.startByte = chunk_id * Constants.FILE.CHUNK_SIZE_BYTES;
-            chunk.endByte = (((chunk_id + 1) * Constants.FILE.CHUNK_SIZE_BYTES)) < chunk.file.size ? (((chunk_id + 1) * Constants.FILE.CHUNK_SIZE_BYTES)) : chunk.file.size;
+            chunk.endByte = (((chunk_id + 1) * Constants.FILE.CHUNK_SIZE_BYTES)) <
+                            chunk.file.size ? (((chunk_id + 1) * Constants.FILE.CHUNK_SIZE_BYTES)) : chunk.file.size;
 
-            let reader = new FileReader();
+            const reader = new FileReader();
             reader.onloadstart = (event) => {
                 chunk.event = event;
                 observer.next(chunk);
-            }
+            };
             reader.onprogress = (event) => {
                 chunk.event = event;
                 observer.next(chunk);
-            }
+            };
             reader.onload = (event) => {
                 chunk.event = event;
                 observer.next(chunk);
-            }
+            };
             reader.onloadend = (event) => {
                 chunk.event = event;
-                if (chunk.event.type == "loadend" && chunk.event.target.readyState == FileReader.DONE) {
+                if (chunk.event.type === 'loadend' && chunk.event.target.readyState === FileReader.DONE) {
                     observer.next(chunk);
                     observer.complete();
                 } else {
@@ -117,11 +158,11 @@ export class AppFileModel implements IDeserializable {
             reader.onabort = (event) => {
                 chunk.event = event;
                 observer.next(chunk);
-            }
+            };
             reader.onerror = (event) => {
                 chunk.event = event;
                 observer.error(chunk);
-            }
+            };
             reader.readAsArrayBuffer(this.file.slice(chunk.startByte, chunk.endByte));
 
             return { unsubscribe() { } };

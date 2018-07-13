@@ -1,5 +1,5 @@
 export class RegistrationModel {
-    
+
     private _email: string;
     private _username: string;
     private _first_name: string;

@@ -117,7 +117,7 @@ class JSONResponse:
 
 class File(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    sha256 = models.CharField(max_length=64, unique=True)
+    sha256 = models.CharField(db_index=True, max_length=64, unique=True)
     last_modified_date = models.DateTimeField(auto_now=False)
     name = models.CharField(max_length=256)
     size = models.IntegerField()
@@ -127,7 +127,7 @@ class File(models.Model):
 
 class FileChunk(models.Model):
     file = models.ForeignKey(File, on_delete=models.CASCADE)
-    sha256 = models.CharField(max_length=64, unique=True)
+    sha256 = models.CharField(db_index=True, max_length=64, unique=True)
     chunk_id = models.IntegerField()
     start_byte = models.IntegerField()
     end_byte = models.IntegerField()

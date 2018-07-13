@@ -1,5 +1,7 @@
+import { FileReaderEvent } from '../interfaces/file-reader-event.interface';
+
 export class AppFileChunkModel {
-    
+
     private _event: Event;
     private _file: any;
     private _id: number;

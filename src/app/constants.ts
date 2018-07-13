@@ -5,7 +5,8 @@ export class Constants {
     LOGIN: Constants.HOST + '/api/login',
     REGISTER: Constants.HOST + '/api/user',
     FILE_PREPARE: Constants.HOST + '/api/file/prepare',
-    CHUNK_UPLOAD: Constants.HOST + '/api/chunk/upload'
+    GET_UPLOADS: Constants.HOST + '/api/file/uploads',
+    CHUNK_UPLOAD: Constants.HOST + '/api/chunk/upload',
   };
   public static LOCAL_STORAGE = {
     UPLOADS: 'uploads',
@@ -14,6 +15,6 @@ export class Constants {
   public static FILE = {
     CHUNK_SIZE_BYTES: 1048576,
     ROUND_SIZE: 100,
-    NUM_CHUNK_UPLOADS: 10
+    NUM_SIMULTANEOUS_UPLOADS: 10
   };
 }

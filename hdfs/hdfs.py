@@ -5,8 +5,7 @@ print('>>>>>>>> CONNECTING TO HDFS >>>>>>>>>')
 hdfs = HDFileSystem(host='localhost', port=9000)
 
 @shared_task
-def writeChunk(user, chunk):
-    chunk.save()
+def writeChunk(chunk):
     print('WRITE CHUNK: ' + chunk.sha256)
 #         username = 'ccravens'
 #         if not HDFS.hdfs.exists('/' + username):

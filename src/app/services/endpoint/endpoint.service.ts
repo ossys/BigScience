@@ -22,7 +22,7 @@ export class EndpointService {
         email: login.email,
         password: login.password
       }, {
-      headers: new HttpHeaders().set('Content-Type', 'application/json').set('Accept', 'application/json; version=' + Constants.API_VERSION)
+      headers: new HttpHeaders().set('Content-Type', 'application/json')
     });
   }
 
@@ -34,7 +34,7 @@ export class EndpointService {
         last_name: registration.last_name,
         password: registration.password
       }, {
-      headers: new HttpHeaders().set('Content-Type', 'application/json').set('Accept', 'application/json; version=' + Constants.API_VERSION)
+      headers: new HttpHeaders().set('Content-Type', 'application/json')
     });
   }
 
@@ -47,7 +47,13 @@ export class EndpointService {
         total_chunks: file.totalChunks
     }, {
       reportProgress: true,
-      headers: new HttpHeaders().set('Content-Type', 'application/json').set('Accept', 'application/json; version=' + Constants.API_VERSION)
+      headers: new HttpHeaders().set('Content-Type', 'application/json')
+    });
+  }
+
+  getUploads(): Observable<AppResponseModel> {
+    return this.http.get<AppResponseModel>(Constants.URL.FILE_PREPARE, {
+      headers: new HttpHeaders().set('Content-Type', 'application/json')
     });
   }
 
@@ -61,8 +67,7 @@ export class EndpointService {
     formData.set('chunk.data', new Blob([new Uint8Array(chunk.event.target.result)]));
 
     return this.http.post<AppResponseModel>(Constants.URL.CHUNK_UPLOAD, formData, {
-      reportProgress: true,
-      headers: new HttpHeaders().set('Accept', 'application/json; version=' + Constants.API_VERSION)
+      reportProgress: true
     });
   }
 }

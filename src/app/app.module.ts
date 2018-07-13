@@ -13,6 +13,7 @@ import { StorageService } from './services/storage/storage.service';
 
 /* Interceptors */
 import { JwtInterceptor } from './interceptors/jwt.interceptor';
+import { VersionInterceptor } from './interceptors/version.interceptor';
 
 /* Home Components */
 import { AppComponent } from './app.component';
@@ -34,6 +35,9 @@ import { AnalyticsComponent } from './components/dashboard/analytics/analytics.c
 
 /* Directives */
 import { DndDirective } from './directives/dnd/dnd.directive';
+
+/* Pipes */
+import { MinutesPipe } from './pipes/minutes.pipe';
 
 const routes: Routes = [
     { path: '', component: HomeComponent },
@@ -65,7 +69,8 @@ const routes: Routes = [
     DataExplorerComponent,
     AnalyticsComponent,
     SummaryComponent,
-    DndDirective
+    DndDirective,
+    MinutesPipe
   ],
   imports: [
     BrowserModule,
@@ -82,7 +87,12 @@ const routes: Routes = [
       provide: HTTP_INTERCEPTORS,
       useClass: JwtInterceptor,
       multi: true
-    }
+    },
+    // {
+    //   provide: HTTP_INTERCEPTORS,
+    //   useClass: VersionInterceptor,
+    //   multi: true
+    // }
   ],
   bootstrap: [AppComponent]
 })

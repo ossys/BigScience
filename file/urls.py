@@ -6,5 +6,6 @@ from . import views
 
 urlpatterns = [
     path('file/prepare', views.Prepare.as_view()),
+    path('file/uploads', views.Uploads.as_view()),
     path('chunk/upload', views.Upload.as_view()),
 ]

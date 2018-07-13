@@ -37,10 +37,21 @@ class Upload(APIView):
         end_byte = request.data['chunk.endByte'],
         data = request.data['chunk.data'].read(),
         )
-        hdfs.writeChunk(request.user, chunk)
+        chunk.save()
+        hdfs.writeChunk(chunk)
 
         return Response(
           models.JSONResponse(success=True, data={}, message='Successfully Uploaded').dict(),
           status=200,
           content_type="application/json"
         )
+
+class Uploads(APIView):
+    def get(self, request, *args, **kwargs):
+
+        return Response(
+          models.JSONResponse(success=True, data={}, message='Successfully Uploaded').dict(),
+          status=200,
+          content_type="application/json"
+        )
+

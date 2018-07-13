@@ -1,4 +1,4 @@
-import { IStorageItem } from '../interfaces/storage-item';
+import { IStorageItem } from '../interfaces/storage-item.interface';
 
 export class StorageItemModel {
     key: string;
