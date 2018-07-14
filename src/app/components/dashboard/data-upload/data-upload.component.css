@@ -20,6 +20,55 @@
  border-color: #222;
 }
 
+.appFile {
+    margin: 0px 0px 8px 0px;
+}
+
 .appFileTitle {
+    cursor: pointer;
+    margin: 0px 0px 10px 0px;
+}
+
+.appFileTitle .arrow {
+    font-size: 2rem;
+    padding: 5px 0px 0px 0px;
+    margin: 0px 10px 0px 0px;
+}
+
+.appFileTitle .title {
+    padding: 10px 0px 0px 0px;
+}
+
+.appFileTitle span.complete {
+    padding: 10px 0px 0px 0px;
+    margin-right: 20px;
+    font-weight: bold;
+}
+
+.appFileTitle .btn-primary {
+    margin-right: 12px;
+}
+
+.appFileTitle .btn-danger i {
+    font-size: 1.8rem;
+    margin: 0px;
+}
+
+.appFileBody {
+    padding: 0px 0px 8px 0px;
+    background-color: #F2F2F2;
+}
+
+.appFileBody form span {
+    display: inline-block;
+    padding: 12px 0px 0px 0px;
+}
+
+.progress {
+    height: 1rem;
+    margin-bottom: 10px;
+}
+
+.appFileBody input {
 
 }

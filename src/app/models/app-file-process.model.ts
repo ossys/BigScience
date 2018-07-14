@@ -1,4 +1,4 @@
-import { AppFileModel } from './app-file.model';
+import { FileModel } from './file.model';
 
 enum Status {
     PROCESSING,
@@ -9,7 +9,7 @@ export class AppFileProcessModel {
     static readonly Status = Status;
 
     private _status: Status = Status.PROCESSING;
-    private _file: AppFileModel;
+    private _file: FileModel;
     private _sha256: any;
     private _totalRounds: number = 0;
     private _totalChunks: number = 0;
@@ -32,11 +32,11 @@ export class AppFileProcessModel {
         this._status = status;
     }
 
-    get file(): AppFileModel {
+    get file(): FileModel {
         return this._file;
     }
 
-    set file(file: AppFileModel) {
+    set file(file: FileModel) {
         this._file = file;
     }
 

@@ -8,7 +8,7 @@ import { Constants } from '../../constants';
 import { AppResponseModel } from '../../models/app-response.model';
 import { LoginModel } from '../../models/login.model';
 import { RegistrationModel } from '../../models/registration.model';
-import { AppFileModel } from '../../models/app-file.model';
+import { FileModel } from '../../models/file.model';
 import { AppFileChunkModel } from '../../models/app-file-chunk.model';
 
 @Injectable({
@@ -38,7 +38,7 @@ export class EndpointService {
     });
   }
 
-  filePrepare(file: AppFileModel): Observable<AppResponseModel> {
+  filePrepare(file: FileModel): Observable<AppResponseModel> {
     return this.http.post<AppResponseModel>(Constants.URL.FILE_PREPARE, {
         sha256: file.sha256,
         last_modified_date: file.lastModifiedDate.toString('u'),

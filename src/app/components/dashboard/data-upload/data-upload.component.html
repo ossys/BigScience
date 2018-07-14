@@ -18,46 +18,83 @@
             <!-- Upload Finished -->
             <div class="js-upload-finished">
                 <h3>Processing Files</h3>
-                <div *ngFor="let file of processingFiles">
-                  <div class="appFile">
-                    <div class="appFileTitle align-middle clearfix">
-                        <span class="pull-left">{{ file.name | truncate: 64: '...': false }} ({{ file.size | bytes }})</span>
-                        <button class="btn btn-danger btn-fill pull-right"><i class="pe-7s-close-circle"></i></button>
+                <hr>
+                <div *ngFor="let file of processingFiles; index as i" class="appFile">
+                    <div class="appFileTitle align-middle clearfix" data-toggle="collapse" [attr.data-target]="'#process-file-' + i">
+                        <span class="arrow pull-left">&#9662;</span>
+                        <!-- <span class="arrow pull-left">&#9656;</span> -->
+                        <span class="title pull-left">{{ file.name | truncate: 64: '...': false }}</span>
+                        <button class="btn btn-danger btn-fill pull-right" [disabled]="file.status != appFileModel.Status.PROCESSING">
+                            <span class="btn-label">
+                                <i class="fa fa-times"></i>
+                            </span>
+                        </button>
                         <button class="btn btn-primary btn-fill btn-wd pull-right" (click)="upload(file)" [disabled]="file.status != appFileModel.Status.VALID">
                             {{ file.status == appFileModel.Status.VALID ? 'Upload File' : 'Processing...' }}
                         </button>
+                        <span class="complete pull-right">[ {{ file.processedPercent | number : '1.2-2' }}% Complete ]</span>
                     </div>
-                    <div class="appFileBody">
+                    <div class="appFileBody collapse in" [attr.id]="'process-file-' + i">
+                        <div class="progress">
+                            <div class="progress-bar progress-bar-info" role="progressbar"
+                            aria-valuenow="40" aria-valuemin="0" aria-valuemax="100" [style.width]="file.processedPercent+'%'">&nbsp;</div>
+                        </div>
                         <div class="row">
-                            <div class="col-md-4">
-                                <div>Processed: x / {{ file.size | bytes }}</div>
-                                <div>Remaining: {{ file.processedEstTime | minutes }}</div>
-                            </div>
-                            <div class="col-md-8">
-                                <!-- Progress Bar -->
-                                <div class="progress">
-                                    <div class="progress-bar progress-bar-striped active" role="progressbar"
-                                    aria-valuenow="40" aria-valuemin="0" aria-valuemax="100" [style.width]="file.processedPercent+'%'">
-                                    {{ file.processedPercent | number : '1.2-2' }}% Complete
+                            <div class="col-md-6 col-sm-6 col-xs-12">
+                                <form class="form-horizontal">
+                                    <div class="form-group ">
+                                        <label class="control-label col-sm-3" [attr.for]="'filename-' + i">
+                                            Name:
+                                        </label>
+                                        <div class="col-sm-9">
+                                            <input class="form-control" id="name" [attr.name]="'filename-' + i" type="text" placeholder="File Name"/>
+                                        </div>
                                     </div>
-                                </div>
+                                    <div class="form-group ">
+                                        <label class="control-label col-sm-3" [attr.for]="'description-' + i">
+                                            Description:
+                                        </label>
+                                        <div class="col-sm-9">
+                                            <textarea class="form-control" cols="40" [attr.name]="'filename-' + i" type="text" rows="10" placeholder="File Description"></textarea>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                            <div class="col-md-6 col-sm-6 col-xs-12">
+                                    <form class="form-horizontal">
+                                        <div class="form-group ">
+                                            <label class="control-label col-sm-3" [attr.for]="'filename-' + i">
+                                                File Size:
+                                            </label>
+                                            <div class="col-sm-9">
+                                                <span>{{ file.size | bytes }}</span>
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="control-label col-sm-3" [attr.for]="'description-' + i">
+                                                Time Remaining:
+                                            </label>
+                                            <div class="col-sm-9">
+                                                <span>{{ file.processedEstTime | minutes }}</span>
+                                            </div>
+                                        </div>
+                                    </form>
                             </div>
                         </div>
                     </div>
-                  </div>
                 </div>
             </div>
 
             <!-- Uploading Files -->
             <div class="js-upload-finished">
                 <h3>Uploads</h3>
+                <hr>
                 <div *ngFor="let file of uploadingFiles">
                   <div class="appFile">
                     <div class="appFileTitle clearfix align-middle">
                         {{ file.name | truncate: 32: '...': false }} 
                         ({{ file.size | bytes }})
                         <button class="btn btn-danger btn-fill pull-right"><i class="pe-7s-close-circle"></i></button>
-                        <button class="btn btn-primary btn-fill btn-wd pull-right" (click)="upload(file)">Upload</button>
                     </div>
                     <div class="appFileBody">
                         Extra options

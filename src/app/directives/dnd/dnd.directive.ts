@@ -1,6 +1,6 @@
 import { Directive, HostListener, HostBinding, EventEmitter, Input, Output } from '@angular/core';
 
-import { AppFileModel } from '../../models/app-file.model';
+import { FileModel } from '../../models/file.model';
 
 @Directive({
     selector: '[appDnd]'
@@ -11,7 +11,7 @@ export class DndDirective {
     private background = '#eee';
 
     @Input() private allowed_extensions: Array<string> = [];
-    @Output() private filesEmitter: EventEmitter<AppFileModel[]> = new EventEmitter();
+    @Output() private filesEmitter: EventEmitter<FileModel[]> = new EventEmitter();
 
     constructor() { }
 
@@ -34,16 +34,16 @@ export class DndDirective {
         event.stopPropagation();
         this.background = '#eee';
         let files = event.dataTransfer.files;
-        let emitFiles: Array<AppFileModel> = [];
+        let emitFiles: Array<FileModel> = [];
 
         if (files.length > 0) {
             for(var i = 0, len = files.length; i < len; i++) {
-                var file = new AppFileModel().deserialize(files[i]);
+                var file = new FileModel().deserialize(files[i]);
                 let ext = files[i].name.split('.')[files[i].name.split('.').length - 1];
                 if (this.allowed_extensions.lastIndexOf(ext) != -1) {
-                    file.status = AppFileModel.Status.VALID;
+                    file.status = FileModel.Status.VALID;
                 } else {
-                    file.status = AppFileModel.Status.INVALID;
+                    file.status = FileModel.Status.INVALID;
                 }
                 emitFiles.push(file);
             }

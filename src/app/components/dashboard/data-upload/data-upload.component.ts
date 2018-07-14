@@ -10,7 +10,7 @@ import { EndpointService } from '../../../services/endpoint/endpoint.service';
 import { TimerService } from '../../../services/timer/timer.service';
 
 import { Constants } from '../../../constants';
-import { AppFileModel } from '../../../models/app-file.model';
+import { FileModel } from '../../../models/file.model';
 import { AppFileProcessModel } from '../../../models/app-file-process.model';
 import { AppFileChunkModel } from '../../../models/app-file-chunk.model';
 
@@ -21,9 +21,9 @@ import { AppFileChunkModel } from '../../../models/app-file-chunk.model';
 })
 export class DataUploadComponent implements OnInit {
 
-    processingFiles: AppFileModel[] = [];
-    uploadingFiles: AppFileModel[] = [];
-    appFileModel = AppFileModel;
+    processingFiles: FileModel[] = [];
+    uploadingFiles: FileModel[] = [];
+    appFileModel = FileModel;
 
     constructor(private endpointService: EndpointService,
                 private timerService: TimerService) { }
@@ -35,7 +35,7 @@ export class DataUploadComponent implements OnInit {
         console.log(event.target.files);
     }
 
-    onFilesAdded(fileList: AppFileModel[]) {
+    onFilesAdded(fileList: FileModel[]) {
         this.processingFiles = this.processingFiles.concat(fileList);
         for (let i = 0; i < fileList.length; i++) {
             this.processFile(fileList[i]);
@@ -46,9 +46,9 @@ export class DataUploadComponent implements OnInit {
         this.uploadFile(file);
     }
 
-    processFile(file: AppFileModel) {
+    processFile(file: FileModel) {
         const processModel: AppFileProcessModel = new AppFileProcessModel();
-        file.status = AppFileModel.Status.PROCESSING;
+        file.status = FileModel.Status.PROCESSING;
         processModel.file = file;
         processModel.sha256 = new fastsha256.Hash();
         processModel.totalChunks = Math.ceil(file.size / Constants.FILE.CHUNK_SIZE_BYTES);
@@ -87,7 +87,7 @@ export class DataUploadComponent implements OnInit {
             complete: () => {
                 processModel.file.sha256 = new Buffer(processModel.sha256.digest()).toString('hex');
                 processModel.file.lastUploadId = 0;
-                processModel.file.status = AppFileModel.Status.VALID;
+                processModel.file.status = FileModel.Status.VALID;
                 console.log('FILE COMPLETE: ' + processModel.file.sha256);
             }
         });
@@ -142,12 +142,13 @@ export class DataUploadComponent implements OnInit {
         });
     }
 
-    uploadFile(file: AppFileModel) {
+    uploadFile(file: FileModel) {
         for (let i = 0; i < this.processingFiles.length; i++) {
             if (this.processingFiles[i].sha256 === file.sha256) {
                 this.processingFiles.splice(i, 1);
             }
         }
+        file.status = FileModel.Status.UPLOADING;
         this.uploadingFiles.push(file);
         this.endpointService.filePrepare(file).subscribe(result => {
             if (result.success) {
@@ -158,7 +159,7 @@ export class DataUploadComponent implements OnInit {
         });
     }
 
-    uploadChunk(chunk_id: number, file: AppFileModel) {
+    uploadChunk(chunk_id: number, file: FileModel) {
         file.getChunk(chunk_id).subscribe({
             next: (chunk: AppFileChunkModel) => {
                 if (chunk.event.type === "progress") {
@@ -178,13 +179,13 @@ export class DataUploadComponent implements OnInit {
         });
     }
 
-    pauseUpload(file: AppFileModel) {
+    pauseUpload(file: FileModel) {
     }
 
-    resumeUpload(file: AppFileModel) {
+    resumeUpload(file: FileModel) {
     }
 
-    cancelUpload(file: AppFileModel) {
+    cancelUpload(file: FileModel) {
     }
 
 }

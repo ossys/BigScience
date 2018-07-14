@@ -14,7 +14,7 @@ enum Status {
     UPLOADED
 }
 
-export class AppFileModel implements IDeserializable {
+export class FileModel implements IDeserializable {
     static readonly Status = Status;
 
     private file: File;
