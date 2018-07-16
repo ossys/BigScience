@@ -164,7 +164,12 @@ export class DataUploadComponent implements OnInit {
                     chunk.sha256 = new Buffer(sha256.digest()).toString('hex');
                     this.endpointService.dataUpload(chunk).subscribe(result => {
                         if (result.success) {
-
+                            file.totalUploaded++;
+                            file.uploadPercent = (file.totalUploaded / file.totalChunks) * 100;
+                        } else {
+                            setTimeout(() => {
+                                this.uploadChunk(chunk_id, file);
+                            }, Constants.FILE.RETRY_UPLOAD_DELAY_MS);
                         }
                     });
                 }
@@ -174,13 +179,39 @@ export class DataUploadComponent implements OnInit {
         });
     }
 
-    pauseUpload(file: FileModel) {
+    pause(event: Event, file: FileModel) {
+        event.stopPropagation();
+        file.status = FileModel.Status.PAUSED;
     }
 
-    resumeUpload(file: FileModel) {
+    cancel(event: Event, file: FileModel) {
+        event.stopPropagation();
+        swal({
+            title: 'IMPORTANT: Confirm Cancel?',
+            text: `Cancelling this operation will stop all
+ processing and delete any uploaded data for this file.
+ If you wish to resume your operation later, you may want to try pausing instead.`,
+            type: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Yes, Cancel',
+            cancelButtonText: 'No, Do Not Cancel',
+            closeOnConfirm: false,
+            closeOnCancel: false
+        }, function(isConfirm) {
+            if (isConfirm) {
+                file.status = FileModel.Status.CANCELED;
+            } else {
+            }
+        });
     }
 
-    cancelUpload(file: FileModel) {
+    resume(event: Event, file: FileModel) {
+        event.stopPropagation();
+        if (file.processedPercent < 100) {
+            file.status = FileModel.Status.PROCESSING;
+        } else {
+            file.status = FileModel.Status.UPLOADING;
+        }
     }
 
 }

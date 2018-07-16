@@ -45,7 +45,7 @@
     font-weight: bold;
 }
 
-.appFileTitle .btn-primary {
+.appFileTitle .btn-primary, .appFileTitle .btn-success, .appFileTitle .btn-warning, .appFileTitle .btn-info {
     margin-right: 12px;
 }
 

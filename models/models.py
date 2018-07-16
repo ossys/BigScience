@@ -121,6 +121,7 @@ class File(models.Model):
     last_modified_date = models.DateTimeField(auto_now=False)
     new_name = models.CharField(max_length=256)
     original_name = models.CharField(max_length=256)
+    description = models.CharField(max_length=1024)
     size = models.IntegerField()
     total_chunks = models.IntegerField()
     chunks_written = models.IntegerField()

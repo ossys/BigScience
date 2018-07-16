@@ -10,8 +10,10 @@ enum Status {
     PROCESSING,
     VALID,
     INVALID,
+    PAUSED,
     UPLOADING,
-    UPLOADED
+    UPLOADED,
+    CANCELED
 }
 
 export class FileModel implements IDeserializable {
@@ -21,13 +23,14 @@ export class FileModel implements IDeserializable {
     private _show = true;
     private _status: Status;
     private _sha256: string;
-    private _newName: string;
-    private _description: string;
-    private _totalChunks: number;
-    private _lastUploadId: number;
-    private _uploads: Array<number>;
+    private _newName = '';
+    private _description = '';
+
+    private _totalChunks = 0;
     private _processedPercent = 0;
     private _processedEstTime = 0;
+
+    private _totalUploaded = 0;
     private _uploadPercent = 0;
     private _uploadEstTime = 0;
 
@@ -39,6 +42,7 @@ export class FileModel implements IDeserializable {
         return this;
     }
 
+    /* show */
     get show(): boolean {
         return this._show;
     }
@@ -47,6 +51,7 @@ export class FileModel implements IDeserializable {
         this._show = show;
     }
 
+    /* status */
     get status(): Status {
         return this._status;
     }
@@ -55,6 +60,7 @@ export class FileModel implements IDeserializable {
         this._status = status;
     }
 
+    /* sha256 */
     get sha256(): string {
         return this._sha256;
     }
@@ -63,6 +69,7 @@ export class FileModel implements IDeserializable {
         this._sha256 = sha256;
     }
 
+    /* newName */
     get newName(): string {
         return this._newName;
     }
@@ -71,6 +78,7 @@ export class FileModel implements IDeserializable {
         this._newName = newName;
     }
 
+    /* description */
     get description(): string {
         return this._description;
     }
@@ -79,6 +87,7 @@ export class FileModel implements IDeserializable {
         this._description = description;
     }
 
+    /* totalChunks */
     get totalChunks(): number {
         return this._totalChunks;
     }
@@ -87,6 +96,7 @@ export class FileModel implements IDeserializable {
         this._totalChunks = totalChunks;
     }
 
+    /* processedPercent */
     get processedPercent(): number {
         return this._processedPercent;
     }
@@ -95,6 +105,7 @@ export class FileModel implements IDeserializable {
         this._processedPercent = processedPercent;
     }
 
+    /* processedEstTime */
     get processedEstTime(): number {
         return this._processedEstTime;
     }
@@ -103,6 +114,7 @@ export class FileModel implements IDeserializable {
         this._processedEstTime = processedEstTime;
     }
 
+    /* uploadPercent */
     get uploadPercent(): number {
         return this._uploadPercent;
     }
@@ -111,6 +123,7 @@ export class FileModel implements IDeserializable {
         this._uploadPercent = uploadPercent;
     }
 
+    /* uploadEstTime */
     get uploadEstTime(): number {
         return this._uploadEstTime;
     }
@@ -119,36 +132,38 @@ export class FileModel implements IDeserializable {
         this._uploadEstTime = uploadEstTime;
     }
 
+    /* name */
     get name(): string {
         return this.file.name;
     }
 
+    /* size */
     get size(): number {
         return this.file.size;
     }
 
+    /* type */
     get type(): string {
         return this.file.type;
     }
 
+    /* lastModified */
     get lastModified(): number {
         return this.file.lastModified;
     }
 
+    /* lastModifiedDate */
     get lastModifiedDate(): Date {
         return this.file.lastModifiedDate;
     }
 
-    get lastUploadId(): number {
-        return this._lastUploadId;
+    /* lastUploadId */
+    get totalUploaded(): number {
+        return this._totalUploaded;
     }
 
-    set lastUploadId(lastUploadId: number) {
-        this._uploads = new Array<number>();
-        for (let i = lastUploadId; i < Constants.FILE.NUM_SIMULTANEOUS_UPLOADS; i++) {
-            this._uploads.push(i);
-        }
-        this._lastUploadId = lastUploadId;
+    set totalUploaded(totalUploaded: number) {
+        this._totalUploaded = totalUploaded;
     }
 
     getChunk(chunk_id: number): Observable<AppFileChunkModel> {

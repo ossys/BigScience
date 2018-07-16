@@ -42,7 +42,9 @@ export class EndpointService {
     return this.http.post<AppResponseModel>(Constants.URL.FILE_PREPARE, {
         sha256: file.sha256,
         last_modified_date: file.lastModifiedDate.toString('u'),
-        name: file.name,
+        original_name: file.name,
+        new_name: file.newName,
+        description: file.description,
         size: file.size,
         total_chunks: file.totalChunks
     }, {

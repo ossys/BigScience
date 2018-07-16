@@ -15,6 +15,7 @@ export class Constants {
   public static FILE = {
     CHUNK_SIZE_BYTES: 1048576,
     ROUND_SIZE: 100,
-    NUM_SIMULTANEOUS_UPLOADS: 10
+    NUM_SIMULTANEOUS_UPLOADS: 10,
+    RETRY_UPLOAD_DELAY_MS: 500
   };
 }

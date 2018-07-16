@@ -14,9 +14,11 @@ class Prepare(APIView):
         user = request.user,
         sha256 = request.data['sha256'],
         last_modified_date = dateutil.parser.parse(request.data['last_modified_date']),
-        name = request.data['name'],
+        original_name = request.data['original_name'],
         size = request.data['size'],
         total_chunks = request.data['total_chunks'],
+        new_name = request.data['new_name'] if 'new_name' in request.data else None,
+        description = request.data['description'] if 'description' in request.data else None,
         )
         file.save()
 
