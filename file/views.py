@@ -4,6 +4,7 @@ from rest_framework.response import Response
 import dateutil.parser
 
 from models import models
+from .serializers import FileChunkSerializer
 from hdfs import hdfs
 
 # Create your views here.
@@ -41,7 +42,7 @@ class Upload(APIView):
         hdfs.writeChunk(chunk)
 
         return Response(
-          models.JSONResponse(success=True, data={}, message='Successfully Uploaded').dict(),
+          models.JSONResponse(success=True, data=FileChunkSerializer(chunk).data, message='Successfully Uploaded').dict(),
           status=200,
           content_type="application/json"
         )

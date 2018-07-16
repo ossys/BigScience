@@ -18,8 +18,11 @@ export class FileModel implements IDeserializable {
     static readonly Status = Status;
 
     private file: File;
+    private _show = true;
     private _status: Status;
     private _sha256: string;
+    private _newName: string;
+    private _description: string;
     private _totalChunks: number;
     private _lastUploadId: number;
     private _uploads: Array<number>;
@@ -36,6 +39,14 @@ export class FileModel implements IDeserializable {
         return this;
     }
 
+    get show(): boolean {
+        return this._show;
+    }
+
+    set show(show: boolean) {
+        this._show = show;
+    }
+
     get status(): Status {
         return this._status;
     }
@@ -50,6 +61,22 @@ export class FileModel implements IDeserializable {
 
     set sha256(sha256: string) {
         this._sha256 = sha256;
+    }
+
+    get newName(): string {
+        return this._newName;
+    }
+
+    set newName(newName: string) {
+        this._newName = newName;
+    }
+
+    get description(): string {
+        return this._description;
+    }
+
+    set description(description: string) {
+        this._description = description;
     }
 
     get totalChunks(): number {

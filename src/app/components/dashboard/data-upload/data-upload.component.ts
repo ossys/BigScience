@@ -21,8 +21,7 @@ import { AppFileChunkModel } from '../../../models/app-file-chunk.model';
 })
 export class DataUploadComponent implements OnInit {
 
-    processingFiles: FileModel[] = [];
-    uploadingFiles: FileModel[] = [];
+    files: FileModel[] = [];
     appFileModel = FileModel;
 
     constructor(private endpointService: EndpointService,
@@ -36,19 +35,21 @@ export class DataUploadComponent implements OnInit {
     }
 
     onFilesAdded(fileList: FileModel[]) {
-        this.processingFiles = this.processingFiles.concat(fileList);
+        this.files = this.files.concat(fileList);
         for (let i = 0; i < fileList.length; i++) {
             this.processFile(fileList[i]);
         }
     }
 
-    upload(file) {
+    upload(event: Event, file: FileModel) {
+        event.stopPropagation();
         this.uploadFile(file);
     }
 
     processFile(file: FileModel) {
         const processModel: AppFileProcessModel = new AppFileProcessModel();
         file.status = FileModel.Status.PROCESSING;
+        file.newName = file.name;
         processModel.file = file;
         processModel.sha256 = new fastsha256.Hash();
         processModel.totalChunks = Math.ceil(file.size / Constants.FILE.CHUNK_SIZE_BYTES);
@@ -143,13 +144,7 @@ export class DataUploadComponent implements OnInit {
     }
 
     uploadFile(file: FileModel) {
-        for (let i = 0; i < this.processingFiles.length; i++) {
-            if (this.processingFiles[i].sha256 === file.sha256) {
-                this.processingFiles.splice(i, 1);
-            }
-        }
         file.status = FileModel.Status.UPLOADING;
-        this.uploadingFiles.push(file);
         this.endpointService.filePrepare(file).subscribe(result => {
             if (result.success) {
                 for (let chunk_id = file.lastUploadId; chunk_id < Constants.FILE.NUM_SIMULTANEOUS_UPLOADS; chunk_id++) {

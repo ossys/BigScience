@@ -8,7 +8,7 @@ import { FileModel } from '../../models/file.model';
 export class DndDirective {
 
     @HostBinding('style.background')
-    private background = '#eee';
+    private background: string = '#eee';
 
     @Input() private allowed_extensions: Array<string> = [];
     @Output() private filesEmitter: EventEmitter<FileModel[]> = new EventEmitter();
@@ -33,14 +33,14 @@ export class DndDirective {
         event.preventDefault();
         event.stopPropagation();
         this.background = '#eee';
-        let files = event.dataTransfer.files;
-        let emitFiles: Array<FileModel> = [];
+        const files = event.dataTransfer.files;
+        const emitFiles: Array<FileModel> = [];
 
         if (files.length > 0) {
-            for(var i = 0, len = files.length; i < len; i++) {
-                var file = new FileModel().deserialize(files[i]);
-                let ext = files[i].name.split('.')[files[i].name.split('.').length - 1];
-                if (this.allowed_extensions.lastIndexOf(ext) != -1) {
+            for (let i = 0, len = files.length; i < len; i++) {
+                const file = new FileModel().deserialize(files[i]);
+                const ext = files[i].name.split('.')[files[i].name.split('.').length - 1];
+                if (this.allowed_extensions.lastIndexOf(ext) !== -1) {
                     file.status = FileModel.Status.VALID;
                 } else {
                     file.status = FileModel.Status.INVALID;
