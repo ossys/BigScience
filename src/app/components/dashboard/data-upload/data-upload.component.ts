@@ -197,7 +197,11 @@ export class DataUploadComponent implements OnInit {
 
     pause(event: Event, file: FileModel) {
         event.stopPropagation();
-        file.status = FileModel.Status.PAUSED;
+        if (file.processedPercent < 100) {
+            file.status = FileModel.Status.PAUSED;
+        } else {
+            file.status = FileModel.Status.PAUSED;
+        }
     }
 
     cancel(event: Event, file: FileModel) {

@@ -35,7 +35,8 @@ export class FileModel implements IDeserializable {
     private _uploadPercent = 0;
     private _uploadEstTime = 0;
 
-    private _uploads: Array<number>;
+    private _uploads = new Array<number>();
+    private _uploaded = new Array<number>();
     private _lastUploadId = -1;
 
     constructor() {
@@ -185,33 +186,51 @@ export class FileModel implements IDeserializable {
 
     setUploaded(id: number) {
         if (id === this._lastUploadId + 1) {
+            const index = this._uploads.indexOf(id);
+            if (index > -1) {
+                this._uploads.splice(index, 1);
+            }
             this._lastUploadId++;
+            let testing = true;
+            while (testing) {
+                testing = false;
+                for (let i = 0; i < this._uploaded.length; i++) {
+                    if (this._uploaded[i] === this._lastUploadId + 1) {
+                        this._lastUploadId++;
+                        const idx = this._uploads.indexOf(this._uploaded[i]);
+                        if (idx > -1) {
+                            this._uploads.splice(idx, 1);
+                        }
+                        this._uploaded.splice(i, 1);
+                        testing = true;
+                    }
+                }
+            }
+        } else {
+            this._uploaded.push(id);
         }
     }
 
     nextUploadId(): number {
-        if (this._uploads == null) {
-            this._uploads = new Array<number>();
-        }
-        console.log('UPLOADS [' + this._lastUploadId + ']: ' + this._uploads.toString());
         // All chunks uploaded, return null
         if (this._lastUploadId === (this._totalChunks - 1)) {
-            console.log('RETURNING NEXT ID: ' + -1);
             return -1;
         }
         if (this._uploads.length === 0) {
             this._uploads.push(0);
             console.log('RETURNING NEXT ID: ' + 0);
+            console.log('UPLOADS [' + this._lastUploadId + ']: ' + this._uploads.toString());
             return 0;
         } else {
             let prev = this._lastUploadId;
+            let ret = prev + 1;
             for (let i = 0; i < this._uploads.length; i++) {
                 if (this._uploads[i] - prev > 1) {
-                    const ret = prev + 1;
                     if (ret < this._totalChunks) {
                         this._uploads.splice(i, 0, ret);
                         console.log('RETURNING NEXT ID: ' + ret);
-                        return prev + 1;
+                        console.log('UPLOADS [' + this._lastUploadId + ']: ' + this._uploads.toString());
+                        return ret;
                     } else {
                         return -1;
                     }
@@ -219,10 +238,11 @@ export class FileModel implements IDeserializable {
                     prev = this._uploads[i];
                 }
             }
-            const ret = prev + 1;
+            ret = prev + 1;
             if (ret < this._totalChunks) {
                 this._uploads.push(ret);
                 console.log('RETURNING NEXT ID: ' + ret);
+                console.log('UPLOADS [' + this._lastUploadId + ']: ' + this._uploads.toString());
                 return ret;
             } else {
                 return -1;

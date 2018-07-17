@@ -2,6 +2,8 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 
 import dateutil.parser
+import time
+import random
 
 from models import models
 from .serializers import FileChunkSerializer
@@ -42,6 +44,7 @@ class Upload(APIView):
         )
         chunk.save()
         hdfs.writeChunk(chunk)
+        time.sleep(random.uniform(.1, 1))
 
         return Response(
           models.JSONResponse(success=True, data=FileChunkSerializer(chunk).data, message='Successfully Uploaded').dict(),
