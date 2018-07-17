@@ -172,6 +172,8 @@ export class DataUploadComponent implements OnInit {
                             const id = file.nextUploadId();
                             if (id !== -1) {
                                 this.uploadChunk(id, file);
+                            } else if (file.totalUploaded === file.totalChunks) {
+                                file.status = FileModel.Status.UPLOADED;
                             }
                         } else {
                             setTimeout(() => {

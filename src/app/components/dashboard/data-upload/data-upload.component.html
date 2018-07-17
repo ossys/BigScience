@@ -34,7 +34,7 @@
                                 <i class="fa fa-play"></i>
                             </span>
                         </button>
-                        <button (click)="pause($event, file)" *ngIf="file.status != appFileModel.Status.PAUSED"  class="btn btn-warning btn-fill pull-right" [disabled]="file.status == appFileModel.Status.PAUSED || file.status == appFileModel.Status.VALID">
+                        <button (click)="pause($event, file)" *ngIf="file.status != appFileModel.Status.PAUSED"  class="btn btn-warning btn-fill pull-right" [disabled]="file.status == appFileModel.Status.PAUSED || file.status == appFileModel.Status.VALID || file.status == appFileModel.Status.UPLOADED">
                             <span class="btn-label">
                                 <i class="fa fa-pause"></i>
                             </span>
@@ -42,7 +42,7 @@
                         <button (click)="resume($event, file)" *ngIf="file.status < appFileModel.Status.UPLOADING" class="btn btn-primary btn-fill btn-wd pull-right" (click)="upload($event, file)" [disabled]="file.status != appFileModel.Status.VALID">
                             {{ file.status == appFileModel.Status.VALID ? 'Upload File' : 'Processing...' }}
                         </button>
-                        <button *ngIf="file.status >= appFileModel.Status.UPLOADING" class="btn btn-success btn-fill btn-wd pull-right" (click)="upload($event, file)" [disabled]="file.status == appFileModel.Status.UPLOADING">
+                        <button *ngIf="file.status >= appFileModel.Status.UPLOADING" class="btn btn-success btn-fill btn-wd pull-right" (click)="upload($event, file)" [disabled]="file.status == appFileModel.Status.UPLOADING || file.status == appFileModel.Status.UPLOADED">
                             {{ file.status == appFileModel.Status.UPLOADING ? 'Uploading...' : 'Uploaded' }}
                         </button>
                         <span *ngIf="file.status < appFileModel.Status.UPLOADING" class="complete pull-right">[ {{ file.processedPercent | number : '1.2-2' }}% Processed ]</span>
