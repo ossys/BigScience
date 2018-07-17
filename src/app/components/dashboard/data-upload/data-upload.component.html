@@ -24,7 +24,7 @@
                         <span *ngIf="file.show" class="arrow pull-left" data-toggle="collapse" [attr.data-target]="'#process-file-' + i">&#9662;</span>
                         <span *ngIf="!file.show" class="arrow pull-left" data-toggle="collapse" [attr.data-target]="'#process-file-' + i">&#9656;</span>
                         <span class="title pull-left">{{ file.name | truncate: 64: '...': false }}</span>
-                        <button (click)="cancel($event, file)" class="btn btn-danger btn-fill pull-right" [disabled]="file.status != appFileModel.Status.PROCESSING && file.status != appFileModel.Status.UPLOADING">
+                        <button (click)="cancel($event, file)" *ngIf="file.status != appFileModel.Status.CANCELED && file.status != appFileModel.Status.UPLOADED" class="btn btn-danger btn-fill pull-right" [disabled]="file.status != appFileModel.Status.PROCESSING && file.status != appFileModel.Status.UPLOADING">
                             <span class="btn-label">
                                 <i class="fa fa-times"></i>
                             </span>
@@ -34,19 +34,28 @@
                                 <i class="fa fa-play"></i>
                             </span>
                         </button>
-                        <button (click)="pause($event, file)" *ngIf="file.status != appFileModel.Status.PAUSED"  class="btn btn-warning btn-fill pull-right" [disabled]="file.status == appFileModel.Status.PAUSED || file.status == appFileModel.Status.VALID || file.status == appFileModel.Status.UPLOADED">
+                        <button (click)="pause($event, file)" *ngIf="file.status != appFileModel.Status.PAUSED && file.status != appFileModel.Status.UPLOADED && file.status != appFileModel.Status.CANCELED"  class="btn btn-warning btn-fill pull-right" [disabled]="file.status == appFileModel.Status.PAUSED || file.status == appFileModel.Status.VALID || file.status == appFileModel.Status.UPLOADED">
                             <span class="btn-label">
                                 <i class="fa fa-pause"></i>
+                            </span>
+                        </button>
+                        <button (click)="files.splice(i, 1)" *ngIf="file.status == appFileModel.Status.CANCELED || file.status == appFileModel.Status.UPLOADED"  class="btn btn-danger btn-fill pull-right">
+                            <span class="btn-label">
+                                <i class="fa fa-trash"></i>
                             </span>
                         </button>
                         <button (click)="resume($event, file)" *ngIf="file.status < appFileModel.Status.UPLOADING" class="btn btn-primary btn-fill btn-wd pull-right" (click)="upload($event, file)" [disabled]="file.status != appFileModel.Status.VALID">
                             {{ file.status == appFileModel.Status.VALID ? 'Upload File' : 'Processing...' }}
                         </button>
-                        <button *ngIf="file.status >= appFileModel.Status.UPLOADING" class="btn btn-success btn-fill btn-wd pull-right" (click)="upload($event, file)" [disabled]="file.status == appFileModel.Status.UPLOADING || file.status == appFileModel.Status.UPLOADED">
+                        <button *ngIf="file.status >= appFileModel.Status.UPLOADING && file.status != appFileModel.Status.CANCELED" class="btn btn-success btn-fill btn-wd pull-right" (click)="upload($event, file)" [disabled]="file.status == appFileModel.Status.UPLOADING || file.status == appFileModel.Status.UPLOADED">
                             {{ file.status == appFileModel.Status.UPLOADING ? 'Uploading...' : 'Uploaded' }}
                         </button>
+                        <button *ngIf="file.status == appFileModel.Status.CANCELED" class="btn btn-danger btn-fill btn-wd pull-right" [disabled]="file.status == appFileModel.Status.CANCELED">
+                            Canceled
+                        </button>
                         <span *ngIf="file.status < appFileModel.Status.UPLOADING" class="complete pull-right">[ {{ file.processedPercent | number : '1.2-2' }}% Processed ]</span>
-                        <span *ngIf="file.status >= appFileModel.Status.UPLOADING" class="complete pull-right">[ {{ file.uploadPercent | number : '1.2-2' }}% Uploaded ]</span>
+                        <span *ngIf="file.status >= appFileModel.Status.UPLOADING && file.status != appFileModel.Status.CANCELED" class="complete pull-right">[ {{ file.uploadPercent | number : '1.2-2' }}% Uploaded ]</span>
+                        <span *ngIf="file.status == appFileModel.Status.CANCELED" class="complete pull-right">[ Canceled ]</span>
                     </div>
                     <div class="progress" *ngIf="file.status < appFileModel.Status.UPLOADING">
                         <div class="progress-bar progress-bar-info" role="progressbar"

@@ -157,40 +157,42 @@ export class DataUploadComponent implements OnInit {
     }
 
     uploadChunk(chunk_id: number, file: FileModel) {
-        file.subscription = file.getChunk(chunk_id).subscribe({
-            next: (chunk: AppFileChunkModel) => {
-                if (chunk.event.type === 'progress') {
-                } else if (chunk.event.type === 'loadend' && chunk.event.target.readyState === FileReader.DONE) {
-                    const sha256 = new fastsha256.Hash();
-                    sha256.update(new Uint8Array(chunk.event.target.result));
-                    chunk.sha256 = new Buffer(sha256.digest()).toString('hex');
-                    this.endpointService.dataUpload(chunk).subscribe(result => {
-                        if (result.success) {
-                            file.totalUploaded++;
-                            file.uploadPercent = (file.totalUploaded / file.totalChunks) * 100;
-                            file.setUploaded(result.data.chunk_id);
-                            const id = file.nextUploadId();
-                            if (id !== -1) {
-                                this.uploadChunk(id, file);
-                            } else if (file.totalUploaded === file.totalChunks) {
-                                file.status = FileModel.Status.UPLOADED;
+        if (file.status !== FileModel.Status.CANCELED) {
+            file.subscription = file.getChunk(chunk_id).subscribe({
+                next: (chunk: AppFileChunkModel) => {
+                    if (chunk.event.type === 'progress') {
+                    } else if (chunk.event.type === 'loadend' && chunk.event.target.readyState === FileReader.DONE) {
+                        const sha256 = new fastsha256.Hash();
+                        sha256.update(new Uint8Array(chunk.event.target.result));
+                        chunk.sha256 = new Buffer(sha256.digest()).toString('hex');
+                        this.endpointService.dataUpload(chunk).subscribe(result => {
+                            if (result.success) {
+                                file.totalUploaded++;
+                                file.uploadPercent = (file.totalUploaded / file.totalChunks) * 100;
+                                file.setUploaded(result.data.chunk_id);
+                                const id = file.nextUploadId();
+                                if (id !== -1) {
+                                    this.uploadChunk(id, file);
+                                } else if (file.totalUploaded === file.totalChunks) {
+                                    file.status = FileModel.Status.UPLOADED;
+                                }
+                            } else {
+                                setTimeout(() => {
+                                    this.uploadChunk(chunk_id, file);
+                                }, Constants.FILE.RETRY_UPLOAD_DELAY_MS);
                             }
-                        } else {
+                        },
+                        error => {
                             setTimeout(() => {
                                 this.uploadChunk(chunk_id, file);
                             }, Constants.FILE.RETRY_UPLOAD_DELAY_MS);
-                        }
-                    },
-                    error => {
-                        setTimeout(() => {
-                            this.uploadChunk(chunk_id, file);
-                        }, Constants.FILE.RETRY_UPLOAD_DELAY_MS);
-                    });
-                }
-            },
-            error: (chunk: AppFileChunkModel) => { console.log('ERROR'); console.log(event); },
-            complete: () => { }
-        });
+                        });
+                    }
+                },
+                error: (chunk: AppFileChunkModel) => { console.log('ERROR'); console.log(event); },
+                complete: () => { }
+            });
+        }
     }
 
     pause(event: Event, file: FileModel) {
@@ -203,21 +205,25 @@ export class DataUploadComponent implements OnInit {
         swal({
             title: 'IMPORTANT: Confirm Cancel?',
             text: `Cancelling this operation will stop all
- processing and delete uploaded data for this file.
- If you wish to resume your operation later, you may want to try pausing instead.`,
+processing and delete any data uploaded for this file.
+If you wish to resume your operation later, you may want to try pausing instead.`,
             type: 'warning',
             showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#3085d6',
             confirmButtonText: 'Yes, Cancel',
-            cancelButtonText: 'No, Do Not Cancel',
-            closeOnConfirm: false,
-            closeOnCancel: false
-        }, function(isConfirm) {
-            if (isConfirm) {
-                file.subscription.unsubscribe();
-                file.status = FileModel.Status.CANCELED;
-            } else {
+            cancelButtonText: 'No, Do Not Cancel'
+          }).then((result) => {
+            if (result) {
+                if (file.status === FileModel.Status.PROCESSING) {
+                    file.subscription.unsubscribe();
+                    file.status = FileModel.Status.CANCELED;
+                } else if (file.status === FileModel.Status.UPLOADING) {
+                    file.subscription.unsubscribe();
+                    file.status = FileModel.Status.CANCELED;
+                }
             }
-        });
+          });
     }
 
     resume(event: Event, file: FileModel) {
