@@ -23,6 +23,7 @@ class Prepare(APIView):
         description = request.data['description'] if 'description' in request.data else None,
         )
         file.save()
+        hdfs.uploadFile(file)
 
         return Response(
           models.JSONResponse(success=True, data={}, message='Successfully Authenticated').dict(),
@@ -43,8 +44,6 @@ class Upload(APIView):
         data = request.data['chunk.data'].read(),
         )
         chunk.save()
-        hdfs.writeChunk(chunk)
-        time.sleep(random.uniform(.1, 1))
 
         return Response(
           models.JSONResponse(success=True, data=FileChunkSerializer(chunk).data, message='Successfully Uploaded').dict(),

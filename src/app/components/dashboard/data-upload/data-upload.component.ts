@@ -30,7 +30,11 @@ export class DataUploadComponent implements OnInit {
     }
 
     onFileSelectFormChange(event) {
-        console.log(event.target.files);
+        for (let i = 0; i < event.target.files.length; i++) {
+            const file = new FileModel().deserialize(event.target.files[i]);
+            this.files.push(file);
+            this.processFile(file);
+        }
     }
 
     onFilesAdded(fileList: FileModel[]) {
@@ -149,7 +153,6 @@ export class DataUploadComponent implements OnInit {
                 for (let cnt = 0;
                      cnt < Constants.FILE.NUM_SIMULTANEOUS_UPLOADS && file.hasUploadId();
                      cnt++) {
-                    console.log('FOR LOOP: ' + cnt);
                     this.uploadChunk(file.nextUploadId(), file);
                 }
             }

@@ -39,7 +39,7 @@
                                 <i class="fa fa-pause"></i>
                             </span>
                         </button>
-                        <button (click)="files.splice(i, 1)" *ngIf="file.status == appFileModel.Status.CANCELED || file.status == appFileModel.Status.UPLOADED"  class="btn btn-danger btn-fill pull-right">
+                        <button (click)="$event.stopPropagation(); files.splice(i, 1)" *ngIf="file.status == appFileModel.Status.CANCELED || file.status == appFileModel.Status.UPLOADED"  class="btn btn-danger btn-fill pull-right">
                             <span class="btn-label">
                                 <i class="fa fa-trash"></i>
                             </span>

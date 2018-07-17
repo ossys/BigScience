@@ -218,8 +218,6 @@ export class FileModel implements IDeserializable {
         }
         if (this._uploads.length === 0) {
             this._uploads.push(0);
-            console.log('RETURNING NEXT ID: ' + 0);
-            console.log('UPLOADS [' + this._lastUploadId + ']: ' + this._uploads.toString());
             return 0;
         } else {
             let prev = this._lastUploadId;
@@ -228,8 +226,6 @@ export class FileModel implements IDeserializable {
                 if (this._uploads[i] - prev > 1) {
                     if (ret < this._totalChunks) {
                         this._uploads.splice(i, 0, ret);
-                        console.log('RETURNING NEXT ID: ' + ret);
-                        console.log('UPLOADS [' + this._lastUploadId + ']: ' + this._uploads.toString());
                         return ret;
                     } else {
                         return -1;
@@ -241,8 +237,6 @@ export class FileModel implements IDeserializable {
             ret = prev + 1;
             if (ret < this._totalChunks) {
                 this._uploads.push(ret);
-                console.log('RETURNING NEXT ID: ' + ret);
-                console.log('UPLOADS [' + this._lastUploadId + ']: ' + this._uploads.toString());
                 return ret;
             } else {
                 return -1;
