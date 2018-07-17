@@ -1,6 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { Observable } from 'rxjs/Observable';
-import { Observer } from 'rxjs/Observer';
+import { Observable, Observer, Subscription } from 'rxjs';
 import { Buffer } from 'buffer';
 import { concat } from 'rxjs/operators';
 
@@ -65,11 +64,11 @@ export class DataUploadComponent implements OnInit {
         console.log('NUM CHUNKS: ' + processModel.totalChunks);
         console.log('NUM ROUNDS: ' + processModel.totalRounds);
 
-        this.callRound(processModel);
+        file.subscription = this.callRound(processModel);
     }
 
-    callRound(processModel: AppFileProcessModel) {
-        this.processChunks(processModel).subscribe({
+    callRound(processModel: AppFileProcessModel): Subscription {
+        return this.processChunks(processModel).subscribe({
             error: () => { },
             next: (pModel) => {
                 if (pModel.status === AppFileProcessModel.Status.COMPLETE) {
@@ -79,7 +78,8 @@ export class DataUploadComponent implements OnInit {
                     pModel.totalChunks : (pModel.round < pModel.totalChunks - 1) ?
                     ((pModel.round + 1) * Constants.FILE.ROUND_SIZE) : pModel.totalChunks;
                     pModel.status = AppFileProcessModel.Status.PROCESSING;
-                    this.callRound(pModel);
+
+                    pModel.file.subscription = this.callRound(pModel);
                 } else {
                     pModel.file.processedPercent = processModel.percentage;
                     pModel.file.processedEstTime = processModel.estTime;
@@ -87,7 +87,6 @@ export class DataUploadComponent implements OnInit {
             },
             complete: () => {
                 processModel.file.sha256 = new Buffer(processModel.sha256.digest()).toString('hex');
-                processModel.file.lastUploadId = 0;
                 processModel.file.status = FileModel.Status.VALID;
                 console.log('FILE COMPLETE: ' + processModel.file.sha256);
             }
@@ -106,7 +105,7 @@ export class DataUploadComponent implements OnInit {
                 }
             }
 
-            chain.subscribe({
+            processModel.file.subscription = chain.subscribe({
                 error: (chunk: AppFileChunkModel) => { console.log('ERROR'); },
                 next: (chunk: AppFileChunkModel) => {
                     if (chunk.event.type === 'loadstart') {
@@ -147,18 +146,21 @@ export class DataUploadComponent implements OnInit {
         file.status = FileModel.Status.UPLOADING;
         this.endpointService.filePrepare(file).subscribe(result => {
             if (result.success) {
-                for (let chunk_id = file.lastUploadId; chunk_id < Constants.FILE.NUM_SIMULTANEOUS_UPLOADS; chunk_id++) {
-                    this.uploadChunk(chunk_id, file);
+                for (let cnt = 0;
+                     cnt < Constants.FILE.NUM_SIMULTANEOUS_UPLOADS && file.hasUploadId();
+                     cnt++) {
+                    console.log('FOR LOOP: ' + cnt);
+                    this.uploadChunk(file.nextUploadId(), file);
                 }
             }
         });
     }
 
     uploadChunk(chunk_id: number, file: FileModel) {
-        file.getChunk(chunk_id).subscribe({
+        file.subscription = file.getChunk(chunk_id).subscribe({
             next: (chunk: AppFileChunkModel) => {
-                if (chunk.event.type === "progress") {
-                } else if (chunk.event.type === "loadend" && chunk.event.target.readyState === FileReader.DONE) {
+                if (chunk.event.type === 'progress') {
+                } else if (chunk.event.type === 'loadend' && chunk.event.target.readyState === FileReader.DONE) {
                     const sha256 = new fastsha256.Hash();
                     sha256.update(new Uint8Array(chunk.event.target.result));
                     chunk.sha256 = new Buffer(sha256.digest()).toString('hex');
@@ -166,16 +168,26 @@ export class DataUploadComponent implements OnInit {
                         if (result.success) {
                             file.totalUploaded++;
                             file.uploadPercent = (file.totalUploaded / file.totalChunks) * 100;
+                            file.setUploaded(result.data.chunk_id);
+                            const id = file.nextUploadId();
+                            if (id !== -1) {
+                                this.uploadChunk(id, file);
+                            }
                         } else {
                             setTimeout(() => {
                                 this.uploadChunk(chunk_id, file);
                             }, Constants.FILE.RETRY_UPLOAD_DELAY_MS);
                         }
+                    },
+                    error => {
+                        setTimeout(() => {
+                            this.uploadChunk(chunk_id, file);
+                        }, Constants.FILE.RETRY_UPLOAD_DELAY_MS);
                     });
                 }
             },
             error: (chunk: AppFileChunkModel) => { console.log('ERROR'); console.log(event); },
-            complete: () => { console.log('COMPLETE CHUNK READ'); }
+            complete: () => { }
         });
     }
 
@@ -189,7 +201,7 @@ export class DataUploadComponent implements OnInit {
         swal({
             title: 'IMPORTANT: Confirm Cancel?',
             text: `Cancelling this operation will stop all
- processing and delete any uploaded data for this file.
+ processing and delete uploaded data for this file.
  If you wish to resume your operation later, you may want to try pausing instead.`,
             type: 'warning',
             showCancelButton: true,
@@ -199,6 +211,7 @@ export class DataUploadComponent implements OnInit {
             closeOnCancel: false
         }, function(isConfirm) {
             if (isConfirm) {
+                file.subscription.unsubscribe();
                 file.status = FileModel.Status.CANCELED;
             } else {
             }

@@ -1,5 +1,4 @@
-import { Observable } from 'rxjs/Observable';
-import { Observer } from 'rxjs/Observer';
+import { Observable, Observer, Subscription } from 'rxjs';
 
 import { IDeserializable } from '../interfaces/deserializable.interface';
 
@@ -26,6 +25,8 @@ export class FileModel implements IDeserializable {
     private _newName = '';
     private _description = '';
 
+    private _subscription: Subscription;
+
     private _totalChunks = 0;
     private _processedPercent = 0;
     private _processedEstTime = 0;
@@ -33,6 +34,9 @@ export class FileModel implements IDeserializable {
     private _totalUploaded = 0;
     private _uploadPercent = 0;
     private _uploadEstTime = 0;
+
+    private _uploads: Array<number>;
+    private _lastUploadId = -1;
 
     constructor() {
     }
@@ -85,6 +89,15 @@ export class FileModel implements IDeserializable {
 
     set description(description: string) {
         this._description = description;
+    }
+
+    /* processingSubscription */
+    get subscription(): Subscription {
+        return this._subscription;
+    }
+
+    set subscription(subscription: Subscription) {
+        this._subscription = subscription;
     }
 
     /* totalChunks */
@@ -164,6 +177,57 @@ export class FileModel implements IDeserializable {
 
     set totalUploaded(totalUploaded: number) {
         this._totalUploaded = totalUploaded;
+    }
+
+    hasUploadId(): boolean {
+        return this.totalUploaded < this.totalChunks;
+    }
+
+    setUploaded(id: number) {
+        if (id === this._lastUploadId + 1) {
+            this._lastUploadId++;
+        }
+    }
+
+    nextUploadId(): number {
+        if (this._uploads == null) {
+            this._uploads = new Array<number>();
+        }
+        console.log('UPLOADS [' + this._lastUploadId + ']: ' + this._uploads.toString());
+        // All chunks uploaded, return null
+        if (this._lastUploadId === (this._totalChunks - 1)) {
+            console.log('RETURNING NEXT ID: ' + -1);
+            return -1;
+        }
+        if (this._uploads.length === 0) {
+            this._uploads.push(0);
+            console.log('RETURNING NEXT ID: ' + 0);
+            return 0;
+        } else {
+            let prev = this._lastUploadId;
+            for (let i = 0; i < this._uploads.length; i++) {
+                if (this._uploads[i] - prev > 1) {
+                    const ret = prev + 1;
+                    if (ret < this._totalChunks) {
+                        this._uploads.splice(i, 0, ret);
+                        console.log('RETURNING NEXT ID: ' + ret);
+                        return prev + 1;
+                    } else {
+                        return -1;
+                    }
+                } else {
+                    prev = this._uploads[i];
+                }
+            }
+            const ret = prev + 1;
+            if (ret < this._totalChunks) {
+                this._uploads.push(ret);
+                console.log('RETURNING NEXT ID: ' + ret);
+                return ret;
+            } else {
+                return -1;
+            }
+        }
     }
 
     getChunk(chunk_id: number): Observable<AppFileChunkModel> {

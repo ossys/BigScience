@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpEvent, HttpInterceptor, HttpHandler, HttpRequest } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import 'rxjs/add/operator/catch';
+import 'rxjs/add/observable/throw';
 
 import { Constants } from '../constants';
 import { StorageService } from '../services/storage/storage.service';
