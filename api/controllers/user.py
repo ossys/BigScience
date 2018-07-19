@@ -1,3 +1,5 @@
+import pymongo
+
 from sanic.response import json, text
 
 from models.json_response import JSONResponse
@@ -24,14 +26,18 @@ async def register(request):
         user.password = request.json['password']
 
         if not validator.hasErrors():
-            user.insert()
-            ud = user.dict()
-            del ud['password']
+            try:
+                user.insert()
+                ud = user.dict()
+                del ud['password']
+            except pymongo.errors.DuplicateKeyError as err:
+                validator.addDuplicateError(err)
 
         return json(JSONResponse(success =  False if validator.hasErrors() else True,
                                  data    =  None if validator.hasErrors() else {'user':ud, 'token': user.token},
                                  message =  'Error Saving User' if validator.hasErrors() else 'Successfully Saved User',
                                  errors  =  validator.errors if validator.hasErrors() else None).dict())
+
     else:
         return text('',status=200)
 

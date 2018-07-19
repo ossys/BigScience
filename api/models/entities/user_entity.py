@@ -1,3 +1,4 @@
+import pymongo
 import bcrypt
 import re
 
@@ -18,6 +19,8 @@ class UserEntity:
         self._validator = validator
         if UserEntity._collection is None:
             UserEntity._collection = Mongo().getCollection('user')
+            UserEntity._collection.create_index([('email', pymongo.ASCENDING)], unique=True)
+            UserEntity._collection.create_index([('username', pymongo.ASCENDING)], unique=True)
 
     @property
     def id(self):
@@ -38,7 +41,7 @@ class UserEntity:
         else:
             if len(email) < 7 or len(email) > 128:
                 self._validator.addInvalidField('email','E-Mail must be between 7 and 128 characters')
-            if not re.match('[^@]+@[^@]+\.[^@]+', email):
+            if not re.match(r'[^@]+@[^@]+\.[^@]+', email):
                 self._validator.addInvalidField('email','Please enter a valid E-Mail address')
 
     @property

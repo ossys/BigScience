@@ -1,7 +1,10 @@
+import re
+
 class Validator:
     MISSING_FIELDS='missing_fields'
     INVALID_FIELDS='invalid_fields'
     DATABASE_ERROR='database_error'
+    DUPLICATE_ERROR='duplicate_error'
     errors = None
 
     def __init__(self):
@@ -27,8 +30,13 @@ class Validator:
             self.errors[Validator.DATABASE_ERROR] = []
         self.errors[Validator.DATABASE_ERROR].append(error)
 
-    def hasDuplicate(self, field=None, value=None): pass
+    def addDuplicateError(self, error):
+        if Validator.DUPLICATE_ERROR not in self.errors:
+            self.errors[Validator.DUPLICATE_ERROR] = []
+        self.errors[Validator.DUPLICATE_ERROR].append({
+            "field": error.__dict__['_OperationFailure__details']['errmsg'].split('index:')[1].split('_')[0].strip(),
+            "value": re.findall(r"\{(.*?)\}", error.__dict__['_OperationFailure__details']['errmsg'])[0].replace('"', '').replace(':', '').strip()
+        })
 
     def hasErrors(self):
         return bool(self.errors)
-
