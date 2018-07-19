@@ -27,14 +27,16 @@ export class RegisterComponent implements OnInit {
             window['lbd'].checkFullPageBackgroundImage();
             setTimeout(function() {
                 window['$']('.card').removeClass('card-hidden');
-            }, 1000)
+            }, 1000);
         });
     }
 
     register() {
         this.endpointService.register(this.registration).subscribe(result => {
-            this.storageService.set(Constants.LOCAL_STORAGE.JWT, result.data.token);
-            this.router.navigate(['dashboard']);
+            if (result.success) {
+                this.storageService.set(Constants.LOCAL_STORAGE.JWT, result.data.token);
+                this.router.navigate(['dashboard']);
+            }
         });
     }
 
