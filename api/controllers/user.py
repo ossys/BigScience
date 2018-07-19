@@ -1,4 +1,5 @@
 import pymongo
+import pprint
 
 from sanic.response import json, text
 
@@ -42,5 +43,18 @@ async def register(request):
         return text('',status=200)
 
 async def login(request):
-    return json({'user': 'login'})
+    if request.method == 'POST':
+        validator = Validator()
+        validator.hasRequiredFields(['email', 'password'], request.json)
+
+        if not validator.hasErrors():
+            user = User(validator).getUserByEmail(request.json['email'])
+
+        return json(JSONResponse(success =  False if validator.hasErrors() else False,
+                                 data    =  None if validator.hasErrors() else {},
+                                 message =  'Error Logging In' if validator.hasErrors() else 'Successfully Logged In',
+                                 errors  =  validator.errors if validator.hasErrors() else None).dict())
+
+    else:
+        return text('',status=200)
 

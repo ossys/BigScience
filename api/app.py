@@ -10,7 +10,7 @@ PREFIX = '/api'
 
 # user
 app.add_route(user.register, user.prefix(PREFIX) + '/register', methods=['POST', 'OPTIONS'])
-app.add_route(user.login, user.prefix(PREFIX) + '/login')
+app.add_route(user.login, user.prefix(PREFIX) + '/login', methods=['POST', 'OPTIONS'])
 
 # file
 app.add_route(file.prepare, file.prefix(PREFIX) + '/prepare')

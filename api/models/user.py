@@ -4,8 +4,8 @@ import jwt
 from models.entities.user_entity import UserEntity
 
 class User(UserEntity):
-    def __init__(self, validator):
-        super().__init__(validator)
+    def __init__(self, validator=None, obj=None):
+        super().__init__(validator=validator, obj=obj)
 
     @property
     def token(self):
@@ -19,3 +19,7 @@ class User(UserEntity):
         }, 'secret', algorithm='HS256')
 
         return token.decode('utf-8')
+
+    @staticmethod
+    def getUserByEmail(email):
+        return User(obj=User._collection.find_one({"email": email}))

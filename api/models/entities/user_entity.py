@@ -1,6 +1,7 @@
 import pymongo
 import bcrypt
 import re
+import pprint
 
 from db.mongo import Mongo
 
@@ -15,12 +16,23 @@ class UserEntity:
     _last_name = None
     _password = None
 
-    def __init__(self, validator):
+    def __init__(self, obj=None, validator=None):
         self._validator = validator
         if UserEntity._collection is None:
             UserEntity._collection = Mongo().getCollection('user')
             UserEntity._collection.create_index([('email', pymongo.ASCENDING)], unique=True)
             UserEntity._collection.create_index([('username', pymongo.ASCENDING)], unique=True)
+        
+        if obj is not None:
+            self.instantiate(obj)
+
+    def instantiate(self, obj):
+        self._id = obj['_id']
+        self._email = obj['email']
+        self._username = obj['username']
+        self._first_name = obj['first_name']
+        self._last_name = obj['last_name']
+        self._password = obj['password']
 
     @property
     def id(self):
