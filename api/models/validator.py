@@ -1,10 +1,12 @@
 import re
 
 class Validator:
-    MISSING_FIELDS='missing_fields'
-    INVALID_FIELDS='invalid_fields'
-    DATABASE_ERROR='database_error'
-    DUPLICATE_ERROR='duplicate_error'
+    MISSING_FIELDS  ='missing_fields'
+    INVALID_FIELDS  ='invalid_fields'
+    DATABASE_ERROR  ='database_error'
+    DUPLICATE_ERROR ='duplicate_error'
+    INVALID_AUTH    ='invalid_auth'
+
     errors = None
 
     def __init__(self):
@@ -37,6 +39,10 @@ class Validator:
             "field": error.__dict__['_OperationFailure__details']['errmsg'].split('index:')[1].split('_')[0].strip(),
             "value": re.findall(r"\{(.*?)\}", error.__dict__['_OperationFailure__details']['errmsg'])[0].replace('"', '').replace(':', '').strip()
         })
+
+    def invalidAuth(self, value):
+        if Validator.INVALID_AUTH not in self.errors:
+            self.errors[Validator.INVALID_AUTH] = value
 
     def hasErrors(self):
         return bool(self.errors)

@@ -1,7 +1,6 @@
 import pymongo
 import bcrypt
 import re
-import pprint
 
 from db.mongo import Mongo
 
@@ -22,17 +21,21 @@ class UserEntity:
             UserEntity._collection = Mongo().getCollection('user')
             UserEntity._collection.create_index([('email', pymongo.ASCENDING)], unique=True)
             UserEntity._collection.create_index([('username', pymongo.ASCENDING)], unique=True)
-        
-        if obj is not None:
-            self.instantiate(obj)
 
-    def instantiate(self, obj):
+    def instantiate(self, obj=None):
+        if self._email is not None:
+            obj=UserEntity._collection.find_one({"email": self._email})
+        elif self._username is not None:
+            obj=UserEntity._collection.find_one({'userame': self._username})
         self._id = obj['_id']
         self._email = obj['email']
         self._username = obj['username']
         self._first_name = obj['first_name']
         self._last_name = obj['last_name']
         self._password = obj['password']
+
+    def exists(self):
+        return self._id is not None
 
     @property
     def id(self):
@@ -99,7 +102,7 @@ class UserEntity:
     @password.setter
     def password(self, password):
         if len(password) >= 8 and len(password) <= 24:
-            self._password = str(bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt(12)), 'ascii')
+            self._password = str(bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt(12)), 'utf-8')
         else:
             if len(password) < 8 or len(password) > 24:
                 self._validator.addInvalidField('password','Password must be between 8 and 24 characters')

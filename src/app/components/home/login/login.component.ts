@@ -23,7 +23,7 @@ export class LoginComponent implements OnInit {
 
   ngOnInit() {
   }
-    
+
   ngAfterViewInit() {
     setTimeout(function() {
         window['lbd'].checkFullPageBackgroundImage();

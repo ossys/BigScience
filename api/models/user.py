@@ -1,5 +1,6 @@
 from datetime import datetime, timedelta
 import jwt
+import bcrypt
 
 from models.entities.user_entity import UserEntity
 
@@ -20,6 +21,5 @@ class User(UserEntity):
 
         return token.decode('utf-8')
 
-    @staticmethod
-    def getUserByEmail(email):
-        return User(obj=User._collection.find_one({"email": email}))
+    def authenticate(self, password):
+        return self.password == str(bcrypt.hashpw(password.encode('utf-8'), self.password.encode('utf-8')), 'utf-8')
