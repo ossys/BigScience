@@ -19,4 +19,8 @@ async def prepare(request):
         return text('',status=200)
 
 async def uploads(request):
-    return json({'file': 'uploads'})
+    if request.method == 'POST':
+        return json({'file': 'uploads'})
+
+    else:
+        return text('',status=200)
