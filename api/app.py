@@ -13,7 +13,7 @@ app.add_route(user.register, user.prefix(PREFIX) + '/register', methods=['POST',
 app.add_route(user.login, user.prefix(PREFIX) + '/login', methods=['POST', 'OPTIONS'])
 
 # file
-app.add_route(file.prepare, file.prefix(PREFIX) + '/prepare')
+app.add_route(file.prepare, file.prefix(PREFIX) + '/prepare', methods=['POST', 'OPTIONS'])
 
 # chunk
 app.add_route(chunk.upload, chunk.prefix(PREFIX) + '/upload')

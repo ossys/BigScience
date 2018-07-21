@@ -1,6 +1,9 @@
+from enum import Enum
+
 import pymongo
 import bcrypt
 import re
+from bson import ObjectId
 
 from db.mongo import Mongo
 
@@ -14,6 +17,7 @@ class UserEntity:
     _first_name = None
     _last_name = None
     _password = None
+    _active = None
 
     def __init__(self, obj=None, validator=None):
         self._validator = validator
@@ -23,16 +27,23 @@ class UserEntity:
             UserEntity._collection.create_index([('username', pymongo.ASCENDING)], unique=True)
 
     def instantiate(self, obj=None):
-        if self._email is not None:
-            obj=UserEntity._collection.find_one({"email": self._email})
-        elif self._username is not None:
-            obj=UserEntity._collection.find_one({'userame': self._username})
+        if obj is None:
+            try:
+                if self._id is not None:
+                    obj=UserEntity._collection.find_one({"_id": self._id})
+                if self._email is not None:
+                    obj=UserEntity._collection.find_one({"email": self._email})
+                if self._username is not None:
+                    obj=UserEntity._collection.find_one({'username': self._username})
+            except:
+                raise
         self._id = obj['_id']
         self._email = obj['email']
         self._username = obj['username']
         self._first_name = obj['first_name']
         self._last_name = obj['last_name']
         self._password = obj['password']
+        self._active = obj['active']
 
     def exists(self):
         return self._id is not None
@@ -43,7 +54,10 @@ class UserEntity:
 
     @id.setter
     def id(self, id):
-        self._id = id
+        if isinstance(id, str):
+            self._id = ObjectId(id)
+        elif isinstance(id, ObjectId):
+            self._id = id
 
     @property
     def email(self):
@@ -107,6 +121,14 @@ class UserEntity:
             if len(password) < 8 or len(password) > 24:
                 self._validator.addInvalidField('password','Password must be between 8 and 24 characters')
 
+    @property
+    def active(self):
+        return self._active
+
+    @active.setter
+    def active(self, active):
+        self._active = active
+
     def insert(self):
         self._id = UserEntity._collection.insert_one(self.dict()).inserted_id
         if self._id is None:
@@ -119,4 +141,5 @@ class UserEntity:
             "first_name": self._first_name,
             "last_name": self._last_name,
             "password": self._password,
+            "active": self._active,
         }

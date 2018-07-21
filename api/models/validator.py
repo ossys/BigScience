@@ -1,11 +1,16 @@
 import re
 
 class Validator:
-    MISSING_FIELDS  ='missing_fields'
-    INVALID_FIELDS  ='invalid_fields'
-    DATABASE_ERROR  ='database_error'
-    DUPLICATE_ERROR ='duplicate_error'
-    INVALID_AUTH    ='invalid_auth'
+    MISSING_FIELDS      ='missing_fields'
+    INVALID_FIELDS      ='invalid_fields'
+    DATABASE_ERROR      ='database_error'
+    DUPLICATE_ERROR     ='duplicate_error'
+    MISSING_TOKEN       ='missing_token'
+    INVALID_TOKEN       ='invalid_token'
+    INVALID_AUTH        ='invalid_auth'
+    INVALID_USER        ='invalid_user'
+    INVALID_ROLE        ='invalid_role'
+    PERMISSION_ERROR    ='permission_error'
 
     errors = None
 
@@ -41,8 +46,28 @@ class Validator:
         })
 
     def invalidAuth(self, value):
-        if Validator.INVALID_AUTH not in self.errors:
-            self.errors[Validator.INVALID_AUTH] = value
+        if Validator.INVALID_USER_AUTH not in self.errors:
+            self.errors[Validator.INVALID_USER_AUTH] = value
+
+    def missingToken(self):
+        if Validator.MISSING_TOKEN not in self.errors:
+            self.errors[Validator.MISSING_TOKEN] = True
+
+    def invalidToken(self, message):
+        if Validator.INVALID_TOKEN not in self.errors:
+            self.errors[Validator.INVALID_TOKEN] = message
+
+    def invalidUser(self, message):
+        if Validator.INVALID_USER not in self.errors:
+            self.errors[Validator.INVALID_USER] = message
+
+    def invalidRole(self):
+        if Validator.INVALID_ROLE not in self.errors:
+            self.errors[Validator.INVALID_ROLE] = True
+
+    def permissionError(self, message):
+        if Validator.PERMISSION_ERROR not in self.errors:
+            self.errors[Validator.PERMISSION_ERROR] = message
 
     def hasErrors(self):
         return bool(self.errors)

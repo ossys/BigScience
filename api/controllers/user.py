@@ -24,6 +24,7 @@ async def register(request):
         user.first_name = request.json['first_name']
         user.last_name = request.json['last_name']
         user.password = request.json['password']
+        user.active = True
 
         if not validator.hasErrors():
             try:
