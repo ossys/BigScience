@@ -1,1 +1,51 @@
 <?xml version="1.0" encoding="UTF-8"?>
+
+<DomainModel xmlns="http://rapid.ossys.com"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:schemaLocation="http://rapid.ossys.com http://rapid.ossys.com/domainmodel.xsd">
+
+<!-- User -->
+<BusinessObject name="User" concurrent="true" atomic="true" auditable="true">
+
+  <!-- E-Mail -->
+  <Attribute  name="EMail" type="TEXT" minsize="7" maxsize="120" persistent="true" characterset="utf-8"
+      required="false" validator="EMAIL" comment="The user's e-mail address" />
+
+  <!-- Password -->
+  <Attribute  name="Password" type="TEXT" minsize="5" maxsize="20" persistent="true" characterset="utf-8"
+        required="false" validator="" comment="The user's password." encryption="BCRYPT" />
+
+  <!-- First Name -->
+  <Attribute  name="First name" type="TEXT" minsize="2" maxsize="60" persistent="true" characterset="utf-8"
+      required="false" validator="/^[a-z ,.'-]+$/i" comment="The user's first name" />
+
+  <!-- Last Name -->
+  <Attribute  name="Last name" type="TEXT" minsize="2" maxsize="60" persistent="true" characterset="utf-8"
+      required="false" validator="/^[a-z ,.'-]+$/i" comment="The user's last name" />
+
+  <!-- Sign Up Date -->
+  <Attribute  name="Sign Up Date" type="DATE" persistent="true"
+      required="true" validator="Past" comment="The date the user signed up" />
+
+  <!-- Last Login Date -->
+  <Attribute  name="Last Login Date" type="DATE" persistent="true"
+      required="false" validator="Past" comment="The date the user last logged in" />
+
+  <!-- Role -->
+  <Attribute name="Role" persistent="true" type="ENUM" comment=""
+        required="true" default="Community" precision="0" >
+    <Enum name="Admin" />
+  </Attribute>
+
+
+  <Relationship object="Address" objectverb="Assigned" subjectverb="Assigning" type="ONE-TO-ONE"
+      ondelete="CASCADE" onupdate="CASCADE" required="false" bidirectional="false" multi="false" embedded="true" />
+
+
+  <Key type="UNIQUE">
+    <Attribute name="EMail" type="TEXT"/>
+  </Key>
+
+</BusinessObject>
+
+</DomainModel>

@@ -1,1 +1,30 @@
 <?xml version="1.0" encoding="UTF-8"?>
+
+<SystemModel xmlns="http://rapid.ossys.com"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://rapid.ossys.com http://rapid.ossys.com/systemmodel.xsd"
+       key="XXXXXX" api="1">
+
+<DataSource name="MongoDB"
+      type="MONGODB3"
+      host="localhost"
+      schema="bigscience"
+      port="27017"
+      username="bigscience"
+      password="password" />
+
+<!-- BigScience -->
+<Project  name="BigScience"
+          buildtool="CONDA"
+          basedir="api">
+
+  <Domain name="BigScience"
+      src="rapid/model.xml"
+      datasource="MongoDB"
+      language="PYTHON"
+      framework="SANIC"
+      tester="SANIC" />
+
+</Project>
+
+</SystemModel>

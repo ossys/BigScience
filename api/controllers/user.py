@@ -1,4 +1,5 @@
 import pymongo
+import datetime
 
 from sanic.response import json, text
 
@@ -25,6 +26,8 @@ async def register(request):
         user.last_name = request.json['last_name']
         user.password = request.json['password']
         user.active = True
+        user.created_date = datetime.datetime.utcnow()
+        user.last_login_date = datetime.datetime.utcnow()
 
         if not validator.hasErrors():
             try:
@@ -60,6 +63,8 @@ async def login(request):
                 if not user.authenticate(request.json['password']):
                     validator.invalidAuth(user.email)
                 else:
+                    user.last_login_date = datetime.datetime.utcnow()
+                    user.update()
                     ud = user.dict()
                     del ud['password']
 

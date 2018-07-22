@@ -10,21 +10,18 @@ class FileEntity:
 
     _id = None
     _sha256 = None
-    _last_modified_date = None
-    _new_name = None
-    _original_name = None
-    _description = None
-    _size = None
-    _total_chunks = None
-    _chunks_written = None
+    _chunk_id = None
+    _start_byte = None
+    _end_byte = None
+    _data = None
 
     _user_id = None
 
     def __init__(self, obj=None, validator=None):
         self._validator = validator
         if FileEntity._collection is None:
-            FileEntity._collection = Mongo().getCollection('file')
-            FileEntity._collection.create_index([('sha256', pymongo.ASCENDING)], unique=True)
+            FileEntity._collection = Mongo().getCollection('chunk')
+            FileEntity._collection.create_index([('email', pymongo.ASCENDING)], unique=True)
 
     def instantiate(self, obj=None):
         if obj is None:

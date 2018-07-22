@@ -1,5 +1,5 @@
-from models.entities.file_entity import FileEntity
+from models.entities.chunk_entity import ChunkEntity
 
-class File(FileEntity):
+class Chunk(ChunkEntity):
     def __init__(self, validator=None, obj=None):
         super().__init__(validator=validator, obj=obj)

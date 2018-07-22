@@ -16,6 +16,11 @@ class UserEntity:
     _last_name = None
     _password = None
     _active = None
+    _created_date = None
+    _last_login_date = None
+    
+    __exists = False
+    __dirty_attributes = {}
 
     def __init__(self, obj=None, validator=None):
         self._validator = validator
@@ -127,8 +132,34 @@ class UserEntity:
     def active(self, active):
         self._active = active
 
+    @property
+    def created_date(self):
+        return self._created_date
+
+    @created_date.setter
+    def created_date(self, created_date):
+        self._created_date = created_date
+
+    @property
+    def last_login_date(self):
+        return self._last_login_date
+
+    @last_login_date.setter
+    def actilast_login_dateve(self, last_login_date):
+        self._last_login_date = last_login_date
+
     def insert(self):
-        self._id = UserEntity._collection.insert_one(self.dict()).inserted_id
+        try:
+            self._id = UserEntity._collection.insert_one(self.dict()).inserted_id
+        except Exception as err:
+            self._validator.addDatabaseError(err)
+        if self._id is None:
+            self._validator.addDatabaseError('Error inserting user')
+
+    def update(self):
+        UserEntity._collection.update_one(
+            { '_id': self.id },
+            { '$set': self.__dirty_attributes })
         if self._id is None:
             self._validator.addDatabaseError('Error inserting user')
 

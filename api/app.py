@@ -1,5 +1,5 @@
 from sanic import Sanic
-from sanic_cors import CORS, cross_origin
+from sanic_cors import CORS
 
 from controllers import user, file, chunk
 
@@ -14,7 +14,6 @@ app.add_route(user.login, user.prefix(PREFIX) +     '/login',       methods=['OP
 
 # file
 app.add_route(file.prepare, file.prefix(PREFIX) +   '/prepare',     methods=['OPTIONS', 'POST'])
-app.add_route(file.uploads, file.prefix(PREFIX) +   '/uploads',     methods=['OPTIONS', 'GET'])
 
 # chunk
 app.add_route(chunk.upload, chunk.prefix(PREFIX) +  '/upload',      methods=['OPTIONS', 'POST'])
