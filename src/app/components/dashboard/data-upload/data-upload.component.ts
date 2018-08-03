@@ -148,7 +148,7 @@ export class DataUploadComponent implements OnInit {
 
     uploadFile(file: FileModel) {
         file.status = FileModel.Status.UPLOADING;
-        this.endpointService.filePrepare(file).subscribe(result => {
+        this.endpointService.fileCreate(file).subscribe(result => {
             if (result.success) {
                 for (let cnt = 0;
                      cnt < Constants.FILE.NUM_SIMULTANEOUS_UPLOADS && file.hasUploadId();
@@ -168,7 +168,7 @@ export class DataUploadComponent implements OnInit {
                         const sha256 = new fastsha256.Hash();
                         sha256.update(new Uint8Array(chunk.event.target.result));
                         chunk.sha256 = new Buffer(sha256.digest()).toString('hex');
-                        this.endpointService.dataUpload(chunk).subscribe(result => {
+                        this.endpointService.chunkCreate(chunk).subscribe(result => {
                             if (result.success) {
                                 file.totalUploaded++;
                                 file.uploadPercent = (file.totalUploaded / file.totalChunks) * 100;

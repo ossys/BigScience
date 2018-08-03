@@ -5,26 +5,34 @@
       xsi:schemaLocation="http://rapid.ossys.com http://rapid.ossys.com/domainmodel.xsd">
 
 <!-- User -->
-<BusinessObject name="User" concurrent="true" atomic="true" auditable="true">
+<BusinessObject name="User" concurrent="true" atomic="true" auditable="true" authenticator="JWT:Password">
 
   <!-- E-Mail -->
-  <Attribute  name="EMail" type="TEXT" minsize="7" maxsize="120" persistent="true" characterset="utf-8"
-      required="false" validator="EMAIL" comment="The user's e-mail address" />
+  <Attribute  name="E-Mail" type="TEXT" minsize="7" maxsize="128" persistent="true" characterset="utf-8"
+      required="true" validator="EMAIL" comment="The user's e-mail address" />
 
-  <!-- Password -->
-  <Attribute  name="Password" type="TEXT" minsize="5" maxsize="20" persistent="true" characterset="utf-8"
-        required="false" validator="" comment="The user's password." encryption="BCRYPT" />
+  <!-- Username -->
+  <Attribute  name="Username" type="TEXT" minsize="5" maxsize="14" persistent="true" characterset="utf-8"
+      required="true" comment="The user's username" />
 
   <!-- First Name -->
-  <Attribute  name="First name" type="TEXT" minsize="2" maxsize="60" persistent="true" characterset="utf-8"
-      required="false" validator="/^[a-z ,.'-]+$/i" comment="The user's first name" />
+  <Attribute  name="First Name" type="TEXT" minsize="2" maxsize="60" persistent="true" characterset="utf-8"
+      required="false" comment="The user's first name" />
 
   <!-- Last Name -->
-  <Attribute  name="Last name" type="TEXT" minsize="2" maxsize="60" persistent="true" characterset="utf-8"
-      required="false" validator="/^[a-z ,.'-]+$/i" comment="The user's last name" />
+  <Attribute  name="Last Name" type="TEXT" minsize="2" maxsize="60" persistent="true" characterset="utf-8"
+      required="false" comment="The user's last name" />
 
-  <!-- Sign Up Date -->
-  <Attribute  name="Sign Up Date" type="DATE" persistent="true"
+  <!-- Password -->
+  <Attribute  name="Password" type="TEXT" minsize="8" maxsize="20" persistent="true" characterset="utf-8"
+      required="false" comment="The user's password." encryption="BCRYPT" access="WRITEONLY" />
+
+  <!-- Active -->
+  <Attribute  name="Active" type="BOOLEAN" persistent="true" characterset="utf-8"
+        required="true" default="false" comment="The user's active status." />
+
+  <!-- Created Date -->
+  <Attribute  name="Created Date" type="DATE" persistent="true" default="NOW"
       required="true" validator="Past" comment="The date the user signed up" />
 
   <!-- Last Login Date -->
@@ -38,12 +46,95 @@
   </Attribute>
 
 
+  <Relationship object="File" objectverb="Owned" subjectverb="Owning" type="ONE-TO-MANY"
+      ondelete="CASCADE" onupdate="CASCADE" required="false" bidirectional="true" multi="false" embedded="false" />
+
+
+  <Key type="UNIQUE">
+    <Attribute name="EMail" index="ASCENDING" />
+  </Key>
+  <Key type="UNIQUE">
+    <Attribute name="Username" index="ASCENDING" />
+  </Key>
+
+</BusinessObject>
+
+<!-- File -->
+<BusinessObject name="File" concurrent="true" atomic="true" auditable="true">
+
+  <!-- SHA256 -->
+  <Attribute  name="SHA256" type="TEXT" minsize="64" maxsize="64" persistent="true" characterset="utf-8"
+      required="true" validator="HEX" comment="The file's sha256 signature" />
+
+  <!-- Last Modified Date -->
+  <Attribute  name="Last Modified Date" type="DATE" persistent="true"
+      required="false" validator="Past" comment="The file's last modified date" />
+
+  <!-- New Name -->
+  <Attribute  name="New Name" type="TEXT" minsize="1" maxsize="512" persistent="true" characterset="utf-8"
+      required="true" validator="" comment="The file's new name" />
+
+  <!-- Original Name -->
+  <Attribute  name="Original Name" type="TEXT" minsize="1" maxsize="512" persistent="true" characterset="utf-8"
+      required="true" validator="" comment="The file's original name" />
+
+  <!-- Description -->
+  <Attribute  name="Description" type="TEXT" minsize="0" maxsize="1024" persistent="true" characterset="utf-8"
+      required="false" comment="The file's description" />
+
+  <!-- Size -->
+  <Attribute  name="Size" type="NUMBER" minsize="1" persistent="true" characterset="utf-8"
+      required="true" comment="The file's size in bytes" />
+
+  <!-- Total Chunks -->
+  <Attribute  name="Total Chunks" type="NUMBER" minsize="0" persistent="true" characterset="utf-8"
+      required="true" comment="The total number of chunks for the file" />
+
+  <!-- Chunks Written -->
+  <Attribute  name="Chunks Written" type="NUMBER" minsize="0" persistent="true" characterset="utf-8"
+      required="true" comment="The total number of chunks written to HDFS" />
+
+
+  <Relationship object="Chunk" objectverb="Owned" subjectverb="Owning" type="ONE-TO-MANY"
+      ondelete="CASCADE" onupdate="CASCADE" required="false" bidirectional="true" multi="false" embedded="false" />
+
+
+  <Key type="UNIQUE">
+    <Attribute name="SHA256" index="TEXT" />
+  </Key>
+
+</BusinessObject>
+
+<!-- Chunk -->
+<BusinessObject name="Chunk" concurrent="true" atomic="true" auditable="true">
+
+  <!-- SHA256 -->
+  <Attribute  name="SHA256" type="TEXT" minsize="64" maxsize="64" persistent="true" characterset="utf-8"
+      required="true" validator="HEX" comment="The chunk's sha256 signature" />
+
+  <!-- Chunk Id -->
+  <Attribute  name="Chunk Id" type="NUMBER" minsize="1" persistent="true" characterset="utf-8"
+      required="true" comment="The file's size in bytes" />
+
+  <!-- Start Byte -->
+  <Attribute  name="Start Byte" type="NUMBER" minsize="0" persistent="true" characterset="utf-8"
+      required="true" comment="The total number of chunks for the file" />
+
+  <!-- End Byte -->
+  <Attribute  name="End Byte" type="NUMBER" minsize="0" persistent="true" characterset="utf-8"
+      required="true" comment="The total number of chunks written to HDFS" />
+
+  <!-- Data -->
+  <Attribute  name="Data" type="BINARY" minsize="0" maxsize="10mb" persistent="true" characterset="utf-8"
+      required="true" comment="The total number of chunks written to HDFS" />
+
+
   <Relationship object="Address" objectverb="Assigned" subjectverb="Assigning" type="ONE-TO-ONE"
       ondelete="CASCADE" onupdate="CASCADE" required="false" bidirectional="false" multi="false" embedded="true" />
 
 
   <Key type="UNIQUE">
-    <Attribute name="EMail" type="TEXT"/>
+    <Attribute name="SHA256" index="TEXT" />
   </Key>
 
 </BusinessObject>

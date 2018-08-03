@@ -38,8 +38,8 @@ export class EndpointService {
     });
   }
 
-  filePrepare(file: FileModel): Observable<AppResponseModel> {
-    return this.http.post<AppResponseModel>(Constants.URL.FILE_PREPARE, {
+  fileCreate(file: FileModel): Observable<AppResponseModel> {
+    return this.http.post<AppResponseModel>(Constants.URL.FILE, {
         sha256: file.sha256,
         last_modified_date: file.lastModifiedDate.toString('u'),
         original_name: file.name,
@@ -53,13 +53,13 @@ export class EndpointService {
     });
   }
 
-  getUploads(): Observable<AppResponseModel> {
-    return this.http.get<AppResponseModel>(Constants.URL.FILE_PREPARE, {
+  fileGet(): Observable<AppResponseModel> {
+    return this.http.get<AppResponseModel>(Constants.URL.FILE, {
       headers: new HttpHeaders().set('Content-Type', 'application/json')
     });
   }
 
-  dataUpload(chunk: AppFileChunkModel): Observable<AppResponseModel> {
+  chunkCreate(chunk: AppFileChunkModel): Observable<AppResponseModel> {
     const formData: FormData = new FormData();
     formData.set('file.sha256', chunk.file.sha256);
     formData.set('chunk.sha256', chunk.sha256);
@@ -68,7 +68,7 @@ export class EndpointService {
     formData.set('chunk.endByte', chunk.endByte.toString());
     formData.set('chunk.data', new Blob([new Uint8Array(chunk.event.target.result)]));
 
-    return this.http.post<AppResponseModel>(Constants.URL.CHUNK_UPLOAD, formData, {
+    return this.http.post<AppResponseModel>(Constants.URL.CHUNK, formData, {
       reportProgress: true
     });
   }

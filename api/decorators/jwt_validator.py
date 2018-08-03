@@ -6,7 +6,7 @@ from sanic.response import json
 
 from models.json_response import JSONResponse
 from models.validator import Validator
-from models.user import User
+from models.mongo.user import User
 
 ALLOW_ALL=[
     '/api/user/register',

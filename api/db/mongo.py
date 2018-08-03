@@ -6,10 +6,10 @@ class Mongo:
     _db = None
 
     def __init__(self):
-        if self._client is None:
+        if Mongo._client is None:
             Mongo._client = MongoClient(os.environ['MONGO_URI'])
-        
-        if self._db is None and self._client is not None:
+
+        if Mongo._db is None and Mongo._client is not None:
             Mongo._db = Mongo._client[os.environ['MONGO_DATABASE']]
 
     def getCollection(self, name):

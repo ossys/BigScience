@@ -5,7 +5,7 @@
        xsi:schemaLocation="http://rapid.ossys.com http://rapid.ossys.com/systemmodel.xsd"
        key="XXXXXX" api="1">
 
-<DataSource name="MongoDB"
+<DataSource name="Mongo"
       type="MONGODB3"
       host="localhost"
       schema="bigscience"
@@ -13,17 +13,32 @@
       username="bigscience"
       password="password" />
 
+<DataSource name="Neo4J"
+     type="NEO4J"
+     host="localhost"
+     schema="bigscience"
+     port="7687"
+     username="bigscience"
+     password="password" />
+
 <!-- BigScience -->
 <Project  name="BigScience"
           buildtool="CONDA"
           basedir="api">
 
-  <Domain name="BigScience"
+  <Domain name="Mongo"
       src="rapid/model.xml"
-      datasource="MongoDB"
+      datasource="Mongo"
       language="PYTHON"
       framework="SANIC"
       tester="SANIC" />
+
+  <Domain name="Neo"
+    src="rapid/model.xml"
+    datasource="Neo4J"
+    language="PYTHON"
+    framework="SANIC"
+    tester="SANIC" />
 
 </Project>
 

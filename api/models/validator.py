@@ -1,6 +1,8 @@
 import re
 
 class Validator:
+    INVALID_TYPES       ='invalid_types'
+    EXCEPTIONS          ='exceptions'
     MISSING_FIELDS      ='missing_fields'
     INVALID_FIELDS      ='invalid_fields'
     DATABASE_ERROR      ='database_error'
@@ -17,10 +19,20 @@ class Validator:
     def __init__(self):
         self.errors = {}
 
+    def invalidType(self, field, message):
+        if Validator.INVALID_TYPES not in self.errors:
+            self.errors[Validator.INVALID_TYPES] = []
+        self.errors[Validator.INVALID_TYPES].append({"field": field, "message": message})
+
     def hasRequiredFields(self, required_fields=[], json={}):
         for field in required_fields:
             if not field in json:
                 self.addMissingField(field)
+
+    def addException(self, message):
+        if Validator.EXCEPTIONS not in self.errors:
+            self.errors[Validator.EXCEPTIONS] = []
+        self.errors[Validator.EXCEPTIONS].append(message)
 
     def addMissingField(self, field):
         if Validator.MISSING_FIELDS not in self.errors:
@@ -46,8 +58,8 @@ class Validator:
         })
 
     def invalidAuth(self, value):
-        if Validator.INVALID_USER_AUTH not in self.errors:
-            self.errors[Validator.INVALID_USER_AUTH] = value
+        if Validator.INVALID_AUTH not in self.errors:
+            self.errors[Validator.INVALID_AUTH] = value
 
     def missingToken(self):
         if Validator.MISSING_TOKEN not in self.errors:

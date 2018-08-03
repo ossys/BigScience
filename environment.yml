@@ -17,4 +17,5 @@ dependencies:
     - coverage==4.5.1
     - sanic==0.7.0
     - sanic-cors==0.9.4
+    - sanic-openapi==0.4.0
     - AoikLiveReload==0.1.0

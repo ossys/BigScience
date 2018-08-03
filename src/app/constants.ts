@@ -4,8 +4,8 @@ export class Constants {
   public static URL = {
     LOGIN: Constants.HOST + '/api/user/login',
     REGISTER: Constants.HOST + '/api/user/register',
-    FILE_PREPARE: Constants.HOST + '/api/file/prepare',
-    CHUNK_UPLOAD: Constants.HOST + '/api/chunk/upload',
+    FILE: Constants.HOST + '/api/file',
+    CHUNK: Constants.HOST + '/api/chunk',
   };
   public static LOCAL_STORAGE = {
     UPLOADS: 'uploads',
