@@ -12,7 +12,7 @@ class File(FileEntity):
         self._collection.update({ '_id': self.id }, { '$inc': { 'chunks_written': 1 } })
 
     def getLastWrittenChunks(self, limit):
-        cursor = models.mongo.chunk.Chunk._collection.find({ 'owning_file_id': self.id },{ 'chunk_id': 1 }).sort([('chunk_id', pymongo.ASCENDING)]).limit(limit)
+        cursor = models.mongo.chunk.Chunk._collection.find({ 'owning_file_id': self.id },{ 'chunk_id': 1 }).sort([('chunk_id', pymongo.DESCENDING)]).limit(limit)
         self._dict['last_written_chunks'] = []
         for record in cursor:
             self._dict['last_written_chunks'].append(record['chunk_id'])

@@ -187,7 +187,9 @@ export class FileModel implements IDeserializable {
 
     setUploaded(id: number, trim: boolean) {
         // Increment the total number uploaded
-        this._totalUploaded++;
+        if (trim) {
+            this._totalUploaded++;
+        }
 
         // Remove the chunk id from uploads list
         const index = this._uploads.indexOf(id);
@@ -219,7 +221,7 @@ export class FileModel implements IDeserializable {
             }
             // Let's go ahead and trim the uploaded list
             // removing all consecutive values from the beginning
-            if(trim) {
+            if (trim) {
                 let cnt = 0;
                 while (this._uploaded.length > 1 && (this._uploaded[cnt + 1] - this._uploaded[cnt]) === 1) {
                     this._uploaded.shift();
@@ -230,10 +232,10 @@ export class FileModel implements IDeserializable {
     }
 
     nextUploadId(): number {
-        console.log('>>>>>>>>>>>>> NextUploadId >>>>>>>>>>>>>');
-        console.log(this._uploaded);
-        console.log(this._uploads);
-        console.log('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>');
+        // console.log('>>>>>>>>>>>>> NextUploadId >>>>>>>>>>>>>');
+        // console.log(this._uploaded);
+        // console.log(this._uploads);
+        // console.log('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>');
         // All chunks uploaded
         if (this._totalUploaded === this._totalChunks) {
             return FileModel.EOF;
@@ -255,7 +257,7 @@ export class FileModel implements IDeserializable {
                 }
                 // No gaps, let's see if we should upload the next one after
                 // the uploads list
-                if (this._uploaded[this._uploaded.length - 1] < this._totalChunks) {
+                if (this._uploaded[this._uploaded.length - 1] < (this._totalChunks - 1)) {
                     this._uploads.push(this._uploaded[this._uploaded.length - 1] + 1);
                     return this._uploaded[this._uploaded.length - 1] + 1;
                 }
