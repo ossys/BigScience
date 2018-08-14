@@ -51,7 +51,7 @@
 
 
   <Key type="UNIQUE">
-    <Attribute name="EMail" index="ASCENDING" />
+    <Attribute name="E-Mail" index="ASCENDING" />
   </Key>
   <Key type="UNIQUE">
     <Attribute name="Username" index="ASCENDING" />
@@ -100,7 +100,10 @@
 
 
   <Key type="UNIQUE">
-    <Attribute name="SHA256" index="TEXT" />
+    <Attribute name="SHA256" index="ASCENDING" />
+  </Key>
+  <Key type="INDEX">
+    <Attribute name="Description" index="TEXT" />
   </Key>
 
 </BusinessObject>
@@ -113,7 +116,7 @@
       required="true" validator="HEX" comment="The chunk's sha256 signature" />
 
   <!-- Chunk Id -->
-  <Attribute  name="Chunk Id" type="NUMBER" minsize="1" persistent="true" characterset="utf-8"
+  <Attribute  name="Chunk Id" type="NUMBER" minsize="0" persistent="true" characterset="utf-8"
       required="true" comment="The file's size in bytes" />
 
   <!-- Start Byte -->
@@ -126,15 +129,14 @@
 
   <!-- Data -->
   <Attribute  name="Data" type="BINARY" minsize="0" maxsize="10mb" persistent="true" characterset="utf-8"
-      required="true" comment="The total number of chunks written to HDFS" />
-
-
-  <Relationship object="Address" objectverb="Assigned" subjectverb="Assigning" type="ONE-TO-ONE"
-      ondelete="CASCADE" onupdate="CASCADE" required="false" bidirectional="false" multi="false" embedded="true" />
-
+      required="true" comment="The total number of chunks written to HDFS" access="WRITEONLY" />
 
   <Key type="UNIQUE">
-    <Attribute name="SHA256" index="TEXT" />
+    <Attribute name="SHA256" index="ASCENDING" />
+  </Key>
+  <Key type="INDEX">
+    <Attribute name="Owning File Id" index="ASCENDING" />
+    <Attribute name="Chunk Id" index="ASCENDING" />
   </Key>
 
 </BusinessObject>

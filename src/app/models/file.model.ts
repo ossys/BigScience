@@ -17,6 +17,7 @@ enum Status {
 
 export class FileModel implements IDeserializable {
     static readonly Status = Status;
+    public static readonly EOF = -1;
 
     private file: File;
     private _show = true;
@@ -37,7 +38,6 @@ export class FileModel implements IDeserializable {
 
     private _uploads = new Array<number>();
     private _uploaded = new Array<number>();
-    private _lastUploadId = -1;
 
     constructor() {
     }
@@ -130,7 +130,8 @@ export class FileModel implements IDeserializable {
 
     /* uploadPercent */
     get uploadPercent(): number {
-        return this._uploadPercent;
+        // return this._uploadPercent;
+        return (this._totalUploaded / this._totalChunks) * 100;
     }
 
     set uploadPercent(uploadPercent: number) {
@@ -184,63 +185,112 @@ export class FileModel implements IDeserializable {
         return this.totalUploaded < this.totalChunks;
     }
 
-    setUploaded(id: number) {
-        if (id === this._lastUploadId + 1) {
-            const index = this._uploads.indexOf(id);
-            if (index > -1) {
-                this._uploads.splice(index, 1);
-            }
-            this._lastUploadId++;
-            let testing = true;
-            while (testing) {
-                testing = false;
-                for (let i = 0; i < this._uploaded.length; i++) {
-                    if (this._uploaded[i] === this._lastUploadId + 1) {
-                        this._lastUploadId++;
-                        const idx = this._uploads.indexOf(this._uploaded[i]);
-                        if (idx > -1) {
-                            this._uploads.splice(idx, 1);
-                        }
-                        this._uploaded.splice(i, 1);
-                        testing = true;
-                    }
+    setUploaded(id: number, trim: boolean) {
+        // Increment the total number uploaded
+        this._totalUploaded++;
+
+        // Remove the chunk id from uploads list
+        const index = this._uploads.indexOf(id);
+        if (index > -1) {
+            this._uploads.splice(index, 1);
+        }
+
+        let inserted = false;
+        // No uploaded, go ahead and push this on the list
+        if (this._uploaded.length === 0) {
+            this._uploaded.push(id);
+        } else {
+            // Let's find where the id needs to go in numerical order
+            for (let i = 0; i < this._uploaded.length - 1; i++) {
+                if (id > this._uploaded[i] && id < this._uploaded[i + 1]) {
+                    this._uploaded.splice(i + 1, 0, id);
+                    inserted = true;
+                    break;
                 }
             }
-        } else {
-            this._uploaded.push(id);
+            // It doesn't belong in the middle of the list
+            // Let's figure out to put it at the beginning or end
+            if (!inserted) {
+                if (id < this._uploaded[0]) {
+                    this._uploaded.unshift(id);
+                } else if (id > this._uploaded[this._uploaded.length - 1]) {
+                    this._uploaded.push(id);
+                }
+            }
+            // Let's go ahead and trim the uploaded list
+            // removing all consecutive values from the beginning
+            if(trim) {
+                let cnt = 0;
+                while (this._uploaded.length > 1 && (this._uploaded[cnt + 1] - this._uploaded[cnt]) === 1) {
+                    this._uploaded.shift();
+                    cnt++;
+                }
+            }
         }
     }
 
     nextUploadId(): number {
-        // All chunks uploaded, return null
-        if (this._lastUploadId === (this._totalChunks - 1)) {
-            return -1;
+        console.log('>>>>>>>>>>>>> NextUploadId >>>>>>>>>>>>>');
+        console.log(this._uploaded);
+        console.log(this._uploads);
+        console.log('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>');
+        // All chunks uploaded
+        if (this._totalUploaded === this._totalChunks) {
+            return FileModel.EOF;
         }
+        // No current uploads
         if (this._uploads.length === 0) {
-            this._uploads.push(0);
-            return 0;
-        } else {
-            let prev = this._lastUploadId;
-            let ret = prev + 1;
-            for (let i = 0; i < this._uploads.length; i++) {
-                if (this._uploads[i] - prev > 1) {
-                    if (ret < this._totalChunks) {
-                        this._uploads.splice(i, 0, ret);
-                        return ret;
-                    } else {
-                        return -1;
+            // No chunks uploaded yet
+            if (this._uploaded.length === 0) {
+                this._uploads.push(0);
+                return 0;
+            } else { // Chunks have been uploaded
+                // Based on what's been uploaded, let's get the next one
+                // by seeing if there are any gaps between upload ids
+                for (let i = 0; i < this._uploaded.length - 1; i++) {
+                    if (Math.abs(this._uploaded[i + 1] - this._uploaded[i]) > 1) {
+                        this._uploads.push(this._uploaded[i] + 1);
+                        return this._uploaded[i] + 1;
                     }
-                } else {
-                    prev = this._uploads[i];
+                }
+                // No gaps, let's see if we should upload the next one after
+                // the uploads list
+                if (this._uploaded[this._uploaded.length - 1] < this._totalChunks) {
+                    this._uploads.push(this._uploaded[this._uploaded.length - 1] + 1);
+                    return this._uploaded[this._uploaded.length - 1] + 1;
+                }
+                // Nothing, let's return -1
+                return FileModel.EOF;
+            }
+        } else { // There are current uploads
+            // Are there 2 or more uploads? If so Let's go
+            // through the uploads and see if there are gaps
+            for (let i = 0; i < this._uploads.length - 1; i++) {
+                // If there is a gap, and the id is not in the uploaded list
+                if (Math.abs(this._uploads[i] - this._uploads[i + 1]) > 1 &&
+                    this._uploaded.indexOf(this._uploads[i] + 1) === -1) {
+                    if (this._uploads[i] + 1 < this._totalChunks) {
+                        this._uploads.splice(i + 1, 0, this._uploads[i] + 1);
+                        return this._uploads[i] + 1;
+                    } else {
+                        return FileModel.EOF;
+                    }
                 }
             }
-            ret = prev + 1;
-            if (ret < this._totalChunks) {
-                this._uploads.push(ret);
-                return ret;
-            } else {
-                return -1;
+            // No gaps, let's return one more than the last id
+            // by cycling through values until we find one that
+            // has not yet been uploaded
+            let id = this._uploads[this._uploads.length - 1] + 1;
+            while (id < this._totalChunks) {
+                if (this._uploaded.indexOf(id) === -1) {
+                    this._uploads.push(id);
+                    return id;
+                } else {
+                    id++;
+                }
             }
+
+            return FileModel.EOF;
         }
     }
 

@@ -1,19 +1,19 @@
 import pymongo
 import datetime
 import re
-from models.mongo.user import User
+import models.mongo.user
 import bson
 from db.mongo import Mongo
 
 class FileEntity:
-    _collection = None
-    _validator = None
+    _collection = Mongo().getCollection('file')
+
+    _collection.create_index([('sha256', pymongo.ASCENDING)], unique=True)
+    _collection.create_index([('description', pymongo.TEXT)])
 
     def __init__(self, validator=None, obj=None):
         self._validator = validator
-        if FileEntity._collection is None:
-            FileEntity._collection = Mongo().getCollection('file')
-            FileEntity._collection.create_index([('sha256', pymongo.TEXT)], unique=True)
+
         if obj is not None:
             self.instantiate(obj=obj)
         else:
@@ -40,16 +40,17 @@ class FileEntity:
                     obj=FileEntity._collection.find_one({'sha256': self._dict['sha256']})
             except:
                 raise
-        self._dict['id'] = obj['_id']
-        self._dict['sha256'] = obj['sha256']
-        self._dict['last_modified_date'] = obj['last_modified_date']
-        self._dict['new_name'] = obj['new_name']
-        self._dict['original_name'] = obj['original_name']
-        self._dict['description'] = obj['description']
-        self._dict['size'] = obj['size']
-        self._dict['total_chunks'] = obj['total_chunks']
-        self._dict['chunks_written'] = obj['chunks_written']
-        self.__exists = True
+        if obj is not None:
+            self._dict['id'] = obj['_id']
+            self._dict['sha256'] = obj['sha256']
+            self._dict['last_modified_date'] = obj['last_modified_date']
+            self._dict['new_name'] = obj['new_name']
+            self._dict['original_name'] = obj['original_name']
+            self._dict['description'] = obj['description']
+            self._dict['size'] = obj['size']
+            self._dict['total_chunks'] = obj['total_chunks']
+            self._dict['chunks_written'] = obj['chunks_written']
+            self.__exists = True
 
     @property
     def id(self):
@@ -231,7 +232,7 @@ class FileEntity:
             self._validator.invalidType('owning_user_id', 'Owning User Id must be of type str or ObjectId, but instead got type ' + type(owning_user_id).__name__)
 
     def setOwningUser(self, owning_user):
-        if isinstance(owning_user, User) and owning_user.exists():
+        if isinstance(owning_user, models.mongo.user.User) and owning_user.exists():
             self.__dirty_attributes['owning_user_id'] = owning_user.id
             self._dict['owning_user_id'] = owning_user.id
 
@@ -260,16 +261,22 @@ class FileEntity:
             except Exception as err:
                 self._validator.addDatabaseError(err)
 
+    def exists(self):
+        return self.__exists
+
+    def sha256Exists(self, sha256):
+        if isinstance(sha256, str) and len(sha256) == 64 and re.match(r'[0-9a-fA-F]+', sha256):
+            return self._collection.find_one({'sha256' : sha256}).count() is 1
+        else:
+            return False
+
     def dict(self):
         d = self._dict
         if 'id' in d:
             d['id'] = str(d['id'])
         if '_id' in d:
             del d['_id']
+        if 'owning_user_id' in d:
+            d['owning_user_id'] = str(d['owning_user_id'])
         return d
-
-    def exists(self):
-        return self.__exists
-
-    def sha256Exists(self): pass
 

@@ -1,7 +1,5 @@
 import os
 import configparser
-from app import app
-from aoiklivereload import LiveReloader
 
 config = configparser.ConfigParser()
 config.read(os.path.join(os.path.abspath(os.path.dirname(__file__)), 'settings.ini'))
@@ -9,6 +7,9 @@ config.read(os.path.join(os.path.abspath(os.path.dirname(__file__)), 'settings.i
 for section in config:
     for key in config[section]:
         os.environ[key.upper()] = config[section][key]
+
+from app import app
+from aoiklivereload import LiveReloader
 
 reloader = LiveReloader()
 reloader.start_watcher_thread()

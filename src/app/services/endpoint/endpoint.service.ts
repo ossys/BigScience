@@ -46,7 +46,8 @@ export class EndpointService {
         new_name: file.newName,
         description: file.description,
         size: file.size,
-        total_chunks: file.totalChunks
+        total_chunks: file.totalChunks,
+        limit: Constants.FILE.NUM_SIMULTANEOUS_UPLOADS*2
     }, {
       reportProgress: true,
       headers: new HttpHeaders().set('Content-Type', 'application/json')

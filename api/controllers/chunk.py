@@ -33,17 +33,17 @@ async def upload(request):
                 file.instantiate()
                 chunk.setOwningFile(file)
             except Exception as err:
-                validator.addException(err.message)
+                validator.addException(err)
 
             if not validator.hasErrors():
                 try:
                     chunk.insert()
                     file.incrementChunksWritten()
                 except Exception as err:
-                    validator.addException(err.message)
+                    validator.addException(err)
 
         return json(JSONResponse(success =  False if validator.hasErrors() else True,
-                                 data    =  None if validator.hasErrors() else {'chunk':{} },
+                                 data    =  None if validator.hasErrors() else { 'chunk': chunk.dict() },
                                  message =  'Error Uploading Chunk' if validator.hasErrors() else 'Successfully Uploaded Chunk',
                                  errors  =  validator.errors if validator.hasErrors() else None).dict())
 

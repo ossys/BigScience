@@ -8,15 +8,14 @@ import bson
 from db.mongo import Mongo
 
 class UserEntity:
-    _collection = None
-    _validator = None
+    _collection = Mongo().getCollection('user')
+
+    _collection.create_index([('email', pymongo.ASCENDING)], unique=True)
+    _collection.create_index([('username', pymongo.ASCENDING)], unique=True)
 
     def __init__(self, validator=None, obj=None):
         self._validator = validator
-        if UserEntity._collection is None:
-            UserEntity._collection = Mongo().getCollection('user')
-            UserEntity._collection.create_index([('email', pymongo.ASCENDING)], unique=True)
-            UserEntity._collection.create_index([('username', pymongo.ASCENDING)], unique=True)
+
         if obj is not None:
             self.instantiate(obj=obj)
         else:
@@ -45,17 +44,18 @@ class UserEntity:
                     obj=UserEntity._collection.find_one({'username': self._dict['username']})
             except:
                 raise
-        self._dict['id'] = obj['_id']
-        self._dict['email'] = obj['email']
-        self._dict['username'] = obj['username']
-        self._dict['first_name'] = obj['first_name']
-        self._dict['last_name'] = obj['last_name']
-        self._dict['password'] = obj['password']
-        self._dict['active'] = obj['active']
-        self._dict['created_date'] = obj['created_date']
-        self._dict['last_login_date'] = obj['last_login_date']
-        self._dict['role'] = obj['role']
-        self.__exists = True
+        if obj is not None:
+            self._dict['id'] = obj['_id']
+            self._dict['email'] = obj['email']
+            self._dict['username'] = obj['username']
+            self._dict['first_name'] = obj['first_name']
+            self._dict['last_name'] = obj['last_name']
+            self._dict['password'] = obj['password']
+            self._dict['active'] = obj['active']
+            self._dict['created_date'] = obj['created_date']
+            self._dict['last_login_date'] = obj['last_login_date']
+            self._dict['role'] = obj['role']
+            self.__exists = True
 
     @property
     def id(self):
@@ -262,6 +262,21 @@ class UserEntity:
             except Exception as err:
                 self._validator.addDatabaseError(err)
 
+    def exists(self):
+        return self.__exists
+
+    def emailExists(self, email):
+        if isinstance(email, str) and len(email) >= 7 and len(email) <= 128 and re.match(r'[^@]+@[^@]+\.[^@]+', email):
+            return self._collection.find_one({'email' : email}).count() is 1
+        else:
+            return False
+
+    def usernameExists(self, username):
+        if isinstance(username, str) and len(username) >= 5 and len(username) <= 14:
+            return self._collection.find_one({'username' : username}).count() is 1
+        else:
+            return False
+
     def dict(self):
         d = self._dict
         if 'id' in d:
@@ -271,13 +286,6 @@ class UserEntity:
         if 'password' in d:
             del d['password']
         return d
-
-    def exists(self):
-        return self.__exists
-
-    def emailExists(self): pass
-
-    def usernameExists(self): pass
 
     @property
     def token(self):

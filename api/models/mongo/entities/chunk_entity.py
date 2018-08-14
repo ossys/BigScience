@@ -1,18 +1,19 @@
 import pymongo
 import re
-from models.mongo.file import File
+import models.mongo.file
 import bson
 from db.mongo import Mongo
 
 class ChunkEntity:
-    _collection = None
-    _validator = None
+    _collection = Mongo().getCollection('chunk')
+
+    _collection.create_index([('sha256', pymongo.ASCENDING)], unique=True)
+    _collection.create_index([('owning_file_id', pymongo.ASCENDING),
+                            ('chunk_id', pymongo.ASCENDING)])
 
     def __init__(self, validator=None, obj=None):
         self._validator = validator
-        if ChunkEntity._collection is None:
-            ChunkEntity._collection = Mongo().getCollection('chunk')
-            ChunkEntity._collection.create_index([('sha256', pymongo.TEXT)], unique=True)
+
         if obj is not None:
             self.instantiate(obj=obj)
         else:
@@ -36,13 +37,14 @@ class ChunkEntity:
                     obj=ChunkEntity._collection.find_one({'sha256': self._dict['sha256']})
             except:
                 raise
-        self._dict['id'] = obj['_id']
-        self._dict['sha256'] = obj['sha256']
-        self._dict['chunk_id'] = obj['chunk_id']
-        self._dict['start_byte'] = obj['start_byte']
-        self._dict['end_byte'] = obj['end_byte']
-        self._dict['data'] = obj['data']
-        self.__exists = True
+        if obj is not None:
+            self._dict['id'] = obj['_id']
+            self._dict['sha256'] = obj['sha256']
+            self._dict['chunk_id'] = obj['chunk_id']
+            self._dict['start_byte'] = obj['start_byte']
+            self._dict['end_byte'] = obj['end_byte']
+            self._dict['data'] = obj['data']
+            self.__exists = True
 
     @property
     def id(self):
@@ -88,7 +90,7 @@ class ChunkEntity:
 
     @chunk_id.setter
     def chunk_id(self, chunk_id):
-        if isinstance(chunk_id, int) and chunk_id >= 1:
+        if isinstance(chunk_id, int) and chunk_id >= 0:
             self.__dirty_attributes['chunk_id'] = chunk_id
             self._dict['chunk_id'] = chunk_id
         else:
@@ -170,7 +172,7 @@ class ChunkEntity:
             self._validator.invalidType('owning_file_id', 'Owning File Id must be of type str or ObjectId, but instead got type ' + type(owning_file_id).__name__)
 
     def setOwningFile(self, owning_file):
-        if isinstance(owning_file, File) and owning_file.exists():
+        if isinstance(owning_file, models.mongo.file.File) and owning_file.exists():
             self.__dirty_attributes['owning_file_id'] = owning_file.id
             self._dict['owning_file_id'] = owning_file.id
 
@@ -197,16 +199,24 @@ class ChunkEntity:
             except Exception as err:
                 self._validator.addDatabaseError(err)
 
+    def exists(self):
+        return self.__exists
+
+    def sha256Exists(self, sha256):
+        if isinstance(sha256, str) and len(sha256) == 64 and re.match(r'[0-9a-fA-F]+', sha256):
+            return self._collection.find_one({'sha256' : sha256}).count() is 1
+        else:
+            return False
+
     def dict(self):
         d = self._dict
         if 'id' in d:
             d['id'] = str(d['id'])
         if '_id' in d:
             del d['_id']
+        if 'data' in d:
+            del d['data']
+        if 'owning_file_id' in d:
+            d['owning_file_id'] = str(d['owning_file_id'])
         return d
-
-    def exists(self):
-        return self.__exists
-
-    def sha256Exists(self): pass
 

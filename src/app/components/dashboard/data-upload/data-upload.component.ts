@@ -150,10 +150,47 @@ export class DataUploadComponent implements OnInit {
         file.status = FileModel.Status.UPLOADING;
         this.endpointService.fileCreate(file).subscribe(result => {
             if (result.success) {
-                for (let cnt = 0;
-                     cnt < Constants.FILE.NUM_SIMULTANEOUS_UPLOADS && file.hasUploadId();
-                     cnt++) {
-                    this.uploadChunk(file.nextUploadId(), file);
+                if (result.data.file.last_written_chunks != null) {
+                    if (file.sha256 === result.data.file.sha256 && result.data.file.chunks_written === result.data.file.total_chunks) {
+                        swal({
+                            title: 'File Already Uploaded',
+                            text: `This file has already been successfully uploaded and is now added to your account.`,
+                            type: 'success',
+                            showCancelButton: false,
+                            confirmButtonColor: '#3085d6',
+                            confirmButtonText: 'Got It!'
+                          }).then((response) => {
+                            if (response) {
+                                file.subscription.unsubscribe();
+                                file.totalUploaded = result.data.file.chunks_written;
+                                file.status = FileModel.Status.UPLOADED;
+                            }
+                          });
+                    } else {
+                        file.totalUploaded = result.data.file.chunks_written;
+                        for (let cnt = 0; cnt < result.data.file.last_written_chunks.length; cnt++) {
+                            file.setUploaded(result.data.file.last_written_chunks[cnt], false);
+                        }
+                        for (let cnt = 0; cnt < Constants.FILE.NUM_SIMULTANEOUS_UPLOADS; cnt++) {
+                            const id = file.nextUploadId();
+                            console.log('>>> NEXT UPLOAD ID >>> ' + id);
+                            if (id !== FileModel.EOF) {
+                                this.uploadChunk(id, file);
+                            } else {
+                                break;
+                            }
+                        }
+                    }
+                } else {
+                    for (let cnt = 0; cnt < Constants.FILE.NUM_SIMULTANEOUS_UPLOADS; cnt++) {
+                        const id = file.nextUploadId();
+                        console.log('>>> NEXT UPLOAD ID >>> ' + id);
+                        if (id !== FileModel.EOF) {
+                            this.uploadChunk(id, file);
+                        } else {
+                            break;
+                        }
+                    }
                 }
             }
         });
@@ -170,10 +207,9 @@ export class DataUploadComponent implements OnInit {
                         chunk.sha256 = new Buffer(sha256.digest()).toString('hex');
                         this.endpointService.chunkCreate(chunk).subscribe(result => {
                             if (result.success) {
-                                file.totalUploaded++;
-                                file.uploadPercent = (file.totalUploaded / file.totalChunks) * 100;
-                                file.setUploaded(result.data.chunk_id);
+                                file.setUploaded(result.data.chunk.chunk_id, true);
                                 const id = file.nextUploadId();
+                                console.log('>>> NEXT UPLOAD ID >>> ' + id);
                                 if (id !== -1) {
                                     this.uploadChunk(id, file);
                                 } else if (file.totalUploaded === file.totalChunks) {
