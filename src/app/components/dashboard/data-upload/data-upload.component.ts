@@ -150,8 +150,8 @@ export class DataUploadComponent implements OnInit {
         file.status = FileModel.Status.UPLOADING;
         this.endpointService.fileCreate(file).subscribe(result => {
             if (result.success) {
-                if (result.data.file.last_written_chunks != null) {
-                    if (file.sha256 === result.data.file.sha256 && result.data.file.chunks_written === result.data.file.total_chunks) {
+                if (result.data.file.last_uploaded_chunks != null) {
+                    if (file.sha256 === result.data.file.sha256 && result.data.file.chunks_uploaded === result.data.file.total_chunks) {
                         swal({
                             title: 'File Already Uploaded',
                             text: `This file has already been successfully uploaded and is now added to your account.`,
@@ -162,14 +162,14 @@ export class DataUploadComponent implements OnInit {
                           }).then((response) => {
                             if (response) {
                                 file.subscription.unsubscribe();
-                                file.totalUploaded = result.data.file.chunks_written;
+                                file.totalUploaded = result.data.file.chunks_uploaded;
                                 file.status = FileModel.Status.UPLOADED;
                             }
                           });
                     } else {
-                        file.totalUploaded = result.data.file.chunks_written;
-                        for (let cnt = 0; cnt < result.data.file.last_written_chunks.length; cnt++) {
-                            file.setUploaded(result.data.file.last_written_chunks[cnt], false);
+                        file.totalUploaded = result.data.file.chunks_uploaded;
+                        for (let cnt = 0; cnt < result.data.file.last_uploaded_chunks.length; cnt++) {
+                            file.setUploaded(result.data.file.last_uploaded_chunks[cnt], false);
                         }
                         for (let cnt = 0; cnt < Constants.FILE.NUM_SIMULTANEOUS_UPLOADS; cnt++) {
                             const id = file.nextUploadId();

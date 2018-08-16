@@ -25,7 +25,8 @@ class FileEntity:
             self._dict['description'] = None
             self._dict['size'] = None
             self._dict['total_chunks'] = None
-            self._dict['chunks_written'] = None
+            self._dict['chunks_uploaded'] = 0
+            self._dict['chunks_written'] = 0
             self._dict['owning_user_id'] = None
             self.__exists = False
             self.__dirty_attributes = {}
@@ -49,6 +50,7 @@ class FileEntity:
             self._dict['description'] = obj['description']
             self._dict['size'] = obj['size']
             self._dict['total_chunks'] = obj['total_chunks']
+            self._dict['chunks_uploaded'] = obj['chunks_uploaded']
             self._dict['chunks_written'] = obj['chunks_written']
             self.__exists = True
 
@@ -188,6 +190,22 @@ class FileEntity:
         else:
             if not isinstance(total_chunks, int):
                 self._validator.invalidType('total_chunks','Total Chunks must be of type int, but instead got type ' + type(total_chunks).__name__)
+
+    @property
+    def chunks_uploaded(self):
+        if 'chunks_uploaded' in self._dict:
+            return self._dict['chunks_uploaded']
+        else:
+            return None
+
+    @chunks_uploaded.setter
+    def chunks_uploaded(self, chunks_uploaded):
+        if isinstance(chunks_uploaded, int) and chunks_uploaded >= 0:
+            self.__dirty_attributes['chunks_uploaded'] = chunks_uploaded
+            self._dict['chunks_uploaded'] = chunks_uploaded
+        else:
+            if not isinstance(chunks_uploaded, int):
+                self._validator.invalidType('chunks_uploaded','Chunks Uploaded must be of type int, but instead got type ' + type(chunks_uploaded).__name__)
 
     @property
     def chunks_written(self):

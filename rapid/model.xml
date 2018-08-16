@@ -41,8 +41,9 @@
 
   <!-- Role -->
   <Attribute name="Role" persistent="true" type="ENUM" comment=""
-        required="true" default="Community" precision="0" >
+        required="true" default="User" precision="0" >
     <Enum name="Admin" />
+    <Enum name="User" />
   </Attribute>
 
 
@@ -90,9 +91,13 @@
   <Attribute  name="Total Chunks" type="NUMBER" minsize="0" persistent="true" characterset="utf-8"
       required="true" comment="The total number of chunks for the file" />
 
+  <!-- Chunks Uploaded -->
+  <Attribute  name="Chunks Uploaded" type="NUMBER" minsize="0" persistent="true" characterset="utf-8"
+      default="0" required="true" comment="The total number of chunks uploaded" />
+
   <!-- Chunks Written -->
   <Attribute  name="Chunks Written" type="NUMBER" minsize="0" persistent="true" characterset="utf-8"
-      required="true" comment="The total number of chunks written to HDFS" />
+      default="0" required="true" comment="The total number of chunks uploaded to HDFS" />
 
 
   <Relationship object="Chunk" objectverb="Owned" subjectverb="Owning" type="ONE-TO-MANY"

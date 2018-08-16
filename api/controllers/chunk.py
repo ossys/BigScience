@@ -38,7 +38,7 @@ async def upload(request):
             if not validator.hasErrors():
                 try:
                     chunk.insert()
-                    file.incrementChunksWritten()
+                    file.incrementChunksUploaded()
                 except Exception as err:
                     validator.addException(err)
 

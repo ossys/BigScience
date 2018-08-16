@@ -38,13 +38,14 @@ async def prepare(request):
                 file.size = request.json['size']
                 file.total_chunks = request.json['total_chunks']
                 file.chunks_written = 0
+                file.chunks_uploaded = 0
                 file.setOwningUser(request['user'])
 
                 if not validator.hasErrors():
                     file.insert()
             else:
                 try:
-                    file.getLastWrittenChunks(int(request.json['limit']))
+                    file.getLastUploadedChunks(int(request.json['limit']))
                 except Exception as err:
                     validator.addException(err)
 

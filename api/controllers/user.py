@@ -19,14 +19,13 @@ async def register(request):
 
         if not validator.hasErrors():
             user = User(validator=validator)
+            user.active = True
+            user.last_login_date = datetime.datetime.utcnow()
             user.email = request.json['email']
             user.username = request.json['username']
             user.first_name = request.json['first_name']
             user.last_name = request.json['last_name']
             user.password = request.json['password']
-            user.active = True
-            user.created_date = datetime.datetime.utcnow()
-            user.last_login_date = datetime.datetime.utcnow()
 
             if not validator.hasErrors():
                 user.insert()

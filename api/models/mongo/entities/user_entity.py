@@ -6,12 +6,17 @@ import os
 import jwt
 import bson
 from db.mongo import Mongo
+from enum import Enum
 
 class UserEntity:
     _collection = Mongo().getCollection('user')
 
     _collection.create_index([('email', pymongo.ASCENDING)], unique=True)
     _collection.create_index([('username', pymongo.ASCENDING)], unique=True)
+
+    class Role(Enum):
+        ADMIN = 0
+        USER = 1
 
     def __init__(self, validator=None, obj=None):
         self._validator = validator
@@ -25,10 +30,10 @@ class UserEntity:
             self._dict['first_name'] = None
             self._dict['last_name'] = None
             self._dict['password'] = None
-            self._dict['active'] = None
-            self._dict['created_date'] = None
+            self._dict['active'] = False
+            self._dict['created_date'] = datetime.datetime.now()
             self._dict['last_login_date'] = None
-            self._dict['role'] = None
+            self._dict['role'] = UserEntity.Role.USER.value
             self.__exists = False
             self.__dirty_attributes = {}
             self.__atomic = True
@@ -221,12 +226,12 @@ class UserEntity:
 
     @role.setter
     def role(self, role):
-        if isinstance(role, int):
-            self.__dirty_attributes['role'] = role
-            self._dict['role'] = role
+        if isinstance(role, UserEntity.Role):
+            self.__dirty_attributes['role'] = role.value
+            self._dict['role'] = role.value
         else:
             if not isinstance(role, int):
-                self._validator.invalidType('role','Role must be of type int, but instead got type ' + type(role).__name__)
+                self._validator.invalidType('role','Role must be of type User.Role, but instead got type ' + type(role).__name__)
 
     @property
     def atomic(self):
