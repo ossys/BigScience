@@ -232,10 +232,10 @@ export class FileModel implements IDeserializable {
     }
 
     nextUploadId(): number {
-        // console.log('>>>>>>>>>>>>> NextUploadId >>>>>>>>>>>>>');
-        // console.log(this._uploaded);
-        // console.log(this._uploads);
-        // console.log('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>');
+        console.log('>>>>>>>>>>>>> NextUploadId >>>>>>>>>>>>>');
+        console.log(this._uploaded);
+        console.log(this._uploads);
+        console.log('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>');
         // All chunks uploaded
         if (this._totalUploaded === this._totalChunks) {
             return FileModel.EOF;

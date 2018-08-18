@@ -60,4 +60,3 @@ async def login(request):
 
     else:
         return text('',status=200)
-

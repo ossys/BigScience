@@ -1,6 +1,7 @@
 from models.mongo.entities.file_entity import FileEntity
 
 import pymongo
+from tasks import tasking
 
 import models.mongo.chunk
 
@@ -17,5 +18,6 @@ class File(FileEntity):
         for record in cursor:
             self._dict['last_uploaded_chunks'].append(record['chunk_id'])
 
+    @tasking.task(name='start_hdfs_upload', bind=True)
     def startHdfsUpload(self):
-        pass
+        print('>>>>>>>>>>>> HDFS UPLOAD TASK >>>>>>>>>>>>')

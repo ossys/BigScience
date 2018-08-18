@@ -1,7 +1,11 @@
 from sanic import Sanic
 from sanic_cors import CORS
+from celery import Celery
 
 from controllers import user, file, chunk
+
+tasks = Celery('bigscience', broker='pyamqp://guest@localhost//')
+tasks.autodiscover_tasks(['models.mongo'])
 
 app = Sanic()
 CORS(app)

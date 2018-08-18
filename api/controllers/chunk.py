@@ -39,6 +39,10 @@ async def upload(request):
                 try:
                     chunk.insert()
                     file.incrementChunksUploaded()
+
+                    if chunk.chunk_id == 0:
+                        file.startHdfsUpload.delay()
+
                 except Exception as err:
                     validator.addException(err)
 
